@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="42cd97ef-d771-4d37-afff-364317bb345e" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/GoGame2/.idea/modules.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/GoGame2/.idea/runConfigurations.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoGame2/.idea/compiler.xml" afterPath="$PROJECT_DIR$/GoGame2/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoGame2/.idea/gradle.xml" afterPath="$PROJECT_DIR$/GoGame2/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoGame2/.idea/misc.xml" afterPath="$PROJECT_DIR$/GoGame2/.idea/misc.xml" />
-    </list>
+    <list default="true" id="42cd97ef-d771-4d37-afff-364317bb345e" name="Default" comment="" />
     <ignored path="GoGame.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,9 +26,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -271,9 +263,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
