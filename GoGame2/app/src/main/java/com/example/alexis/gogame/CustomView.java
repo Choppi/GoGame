@@ -1,3 +1,5 @@
+package com.example.alexis.gogame;
+
 // imports
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,14 +9,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import static java.lang.String.valueOf;
 
 //class definition
 public class CustomView extends View {
@@ -75,8 +69,9 @@ public class CustomView extends View {
     }
 
     public void init() {
-        balck = new Paint(Paint.ANTI_ALIAS_FLAG);
-        balck.setColor(Color.BLACK);
+        black = new Paint(Paint.ANTI_ALIAS_FLAG);
+        black.setColor(Color.BLACK);
+        black.setStyle(Paint.Style.STROKE);
     }
 
     public void onDraw(final Canvas canvas){
@@ -87,29 +82,24 @@ public class CustomView extends View {
         int width = getWidth();
         // Hauteur de la vue
         int height = getHeight();
-        step = Math.min(width, height);
+        int step = Math.min(width, height);
 
         float tranche = (float)step*0.1f;
 
-        canvas.drawRect(step * 0.125f, step * 0.125f, step * 0.875f, step * 0.875f, black);
+        //canvas.drawRect(step * 0.125f, step * 0.125f, step * 0.875f, step * 0.875f, black);
 
-        int i=1;
+        int i=0;
         while (i < 10){
+            //horizontal
             canvas.drawLine(step * 0.125f+tranche*i, step * 0.125f,step * 0.125f+tranche*i, step * 0.875f, black);
+            //vertical
+            canvas.drawLine(step * 0.125f, step * 0.125f+tranche*i, step * 0.875f, step * 0.125f+tranche*i, black);
             i++;
         }
-        int i=1;
-        while (i < 10){
-            canvas.drawLine(step * 0.125f, step * 0.125f+tranche*i, step * 0.875f, step * 0.125f+tranche*i, black);
-            i++
-        }
-
-
-
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-
+        return super.onTouchEvent(event);
     }
 }
 
