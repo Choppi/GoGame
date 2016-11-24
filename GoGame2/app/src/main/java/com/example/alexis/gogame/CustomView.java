@@ -22,6 +22,7 @@ public class CustomView extends View {
     Paint black;
 
 
+
     //default constructor
     public CustomView(Context c) {
         super(c);
@@ -75,8 +76,11 @@ public class CustomView extends View {
     }
 
     public void init() {
-        balck = new Paint(Paint.ANTI_ALIAS_FLAG);
-        balck.setColor(Color.BLACK);
+
+        black = new Paint(Paint.ANTI_ALIAS_FLAG);
+        black.setStyle(Paint.Style.STROKE);
+        black.setStrokeWidth(10);
+        black.setColor(Color.BLACK);//black
     }
 
     public void onDraw(final Canvas canvas){
@@ -87,19 +91,19 @@ public class CustomView extends View {
         int width = getWidth();
         // Hauteur de la vue
         int height = getHeight();
-        step = Math.min(width, height);
+        int step = Math.min(width, height);
 
         float tranche = (float)step*0.1f;
 
         canvas.drawRect(step * 0.125f, step * 0.125f, step * 0.875f, step * 0.875f, black);
 
-        int i=1;
-        while (i < 10){
+        int i=0;
+        while (i <= 10){
             canvas.drawLine(step * 0.125f+tranche*i, step * 0.125f,step * 0.125f+tranche*i, step * 0.875f, black);
             i++;
         }
-        int i=1;
-        while (i < 10){
+        int i=0;
+        while (i <= 10){
             canvas.drawLine(step * 0.125f, step * 0.125f+tranche*i, step * 0.875f, step * 0.125f+tranche*i, black);
             i++
         }
@@ -109,7 +113,7 @@ public class CustomView extends View {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-
+        return super.onTouchEvent(event);
     }
 }
 
