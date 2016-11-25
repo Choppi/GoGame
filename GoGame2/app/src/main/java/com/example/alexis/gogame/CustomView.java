@@ -84,7 +84,7 @@ public class CustomView extends View {
         board = new Circle[10][10];
         for(int i = 0;i<board.length;i++) {
             for (int j = 0; j < board[i].length; j++) {
-                System.out.println("j = "+j);
+                System.out.println("j2 = "+j);
                 System.out.println("i = "+j);
 
                 board[i][j] = new Circle(0, 0);
