@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -20,6 +21,7 @@ public class CustomView extends View {
     private final int length_y = 10;
 
     private Paint black;
+    private Paint gray;
     private List<Blockchain> blockchain;
     private List<int[][]> matrix;
     private Circle[][] board;
@@ -79,15 +81,20 @@ public class CustomView extends View {
     public void init() {
         blockchain = new ArrayList<>();
         matrix = new ArrayList<>();
-        board = new Circle[length_x][length_y];
-        for(int i = 0;i<board.length;i++)
-            for(int j = 0;i<board[i].length;j++)
-                board[i][j] = new Circle(0,0);
-
+        board = new Circle[10][10];
+        for(int i = 0;i<board.length-1;i++) {
+            for (int j = 0; i < board[i].length - 1; j++) {
+                board[i][j] = new Circle(0, 0);
+            }
+        }
 
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         black.setColor(Color.BLACK);
         black.setStyle(Paint.Style.STROKE);
+
+        gray = new Paint(Paint.ANTI_ALIAS_FLAG);
+        gray.setColor(Color.GRAY);
+        gray.setStyle(Paint.Style.FILL);
     }
 
     public void onDraw(final Canvas canvas){
@@ -102,8 +109,6 @@ public class CustomView extends View {
 
         int tranche = step/11;
 
-        int k = 0;
-
         int i=1;
         while (i < 11){
             //horizontal
@@ -112,10 +117,33 @@ public class CustomView extends View {
             canvas.drawLine(tranche,i*tranche,10*tranche,i*tranche,black);
             i++;
         }
+
+        for(int j = 0; j<board.length;j++)
+            for(int k = 0; k<board[j].length;k++) {
+                board[j][k].setPosX(k*tranche);
+                board[j][k].setPosY(j*tranche);
+                canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),gray);
+            }
     }
 
     public boolean onTouchEvent(MotionEvent event) {
+
+
         return super.onTouchEvent(event);
     }
+
+    public Pair<Integer,Integer> getCoordMatrix(Circle circle) throws Exception{
+
+            for(int i = 0;i<board.length;i++)
+            {
+                for(int j = 0;j<board[i].length;j++)
+                {
+                    if(board[i][j].equals(circle))
+                        return new Pair<>(i, j);
+                }
+            }
+        return null;
+    }
+
 }
 

@@ -10,7 +10,7 @@ public class Circle {
     public Circle(int posX, int posY) {
         this.posX = posX;
         this.posY = posY;
-        this.radius = 0;
+        this.radius = 10;
         this.liberties = 0;
     }
 
