@@ -136,7 +136,7 @@ public class CustomView extends View {
             for(int k = 0; k<board[j].length;k++) {
             board[j][k].setPosX((1+k)*tranche);
             board[j][k].setPosY((1+j)*tranche);
-            canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),gray);
+            canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),board[j][k].getPaint());
             }
 
 
@@ -244,10 +244,10 @@ public class CustomView extends View {
                 if(n.getRadius()==0){
                     return false;
                 }
-                else if(n.getColor()==circleBlack){
+                else if(n.getPaint()==circleBlack){
                     numberOfBlack++;
                 }
-                else if(n.getColor()==circleWhite){
+                else if(n.getPaint()==circleWhite){
                     numberOfWhite++;
                 }
             }
@@ -269,7 +269,7 @@ public class CustomView extends View {
         if (c.getRadius() == 0) {
 
             for (Circle n : myNeigbhors(c)) {
-                if (n.getRadius() == 0 || n.getColor() == currentPaint()) {
+                if (n.getRadius() == 0 || n.getPaint() == currentPaint()) {
                     return false;
                 }
             }
@@ -294,9 +294,9 @@ public class CustomView extends View {
                     //check des yeux
                     //changement du circle
                     board[j][k].setRadius(tranche/2);
-                    //board[j][k].setColor(currentPaint());
+                    board[j][k].setColor(currentPaint());
                     //suppression des unités
-                    removeSimpleCircle();
+                    //removeSimpleCircle();
                     //suppression des groupes
                     //sauvegarde de la matrice actuelle dans une list
                     //fin du tour
@@ -309,14 +309,16 @@ public class CustomView extends View {
         //return paint of the current player
         if(turn%2==0){
             return circleWhite;
+
         }
         return circleBlack;
+
     }
 
     private void removeSimpleCircle() {
         for (int j = 0; j < board.length; j++)
             for (int k = 0; k < board[j].length; k++) {
-                if (board[j][k].getColor() != currentPaint()
+                if (board[j][k].getPaint() != currentPaint()
                         && board[j][k].getRadius() != 0
                         && AmIDead(board[j][k])) {
                     board[j][k].setRadius(0);
