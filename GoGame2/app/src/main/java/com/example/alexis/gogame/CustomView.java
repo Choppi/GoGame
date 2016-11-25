@@ -92,6 +92,7 @@ public class CustomView extends View {
             //horizontal 2
             canvas.drawLine(i*tranche,tranche,i*tranche,10*tranche,black);
             //vertical 21
+            //test
             canvas.drawLine(tranche,i*tranche,10*tranche,i*tranche,black);
             i++;
         }
