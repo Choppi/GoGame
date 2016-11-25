@@ -10,11 +10,19 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 //class definition
 public class CustomView extends View {
 
-    Paint black;
+    private final int length_x = 10;
+    private final int length_y = 10;
 
+    private Paint black;
+    private List<Blockchain> blockchain;
+    private List<int[][]> matrix;
+    private Circle[][] board;
 
     //default constructor
     public CustomView(Context c) {
@@ -23,7 +31,7 @@ public class CustomView extends View {
     }
 
     //constructor that takes in a context and also a list of attributes
-//that were set through XML
+    //that were set through XML
     public CustomView(Context c, AttributeSet as) {
         super(c, as);
         init();
@@ -69,6 +77,14 @@ public class CustomView extends View {
     }
 
     public void init() {
+        blockchain = new ArrayList<>();
+        matrix = new ArrayList<>();
+        board = new Circle[length_x][length_y];
+        for(int i = 0;i<board.length;i++)
+            for(int j = 0;i<board[i].length;j++)
+                board[i][j] = new Circle(0,0);
+
+
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         black.setColor(Color.BLACK);
         black.setStyle(Paint.Style.STROKE);
