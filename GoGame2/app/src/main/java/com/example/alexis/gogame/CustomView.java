@@ -90,10 +90,9 @@ public class CustomView extends View {
 
         int i=1;
         while (i < 11){
-            //horizontal 2
+            //horizontal
             canvas.drawLine(i*tranche,tranche,i*tranche,10*tranche,black);
-            //vertical 21
-            //test
+            //vertical
             canvas.drawLine(tranche,i*tranche,10*tranche,i*tranche,black);
             i++;
         }
