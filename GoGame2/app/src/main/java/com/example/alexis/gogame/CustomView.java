@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -19,7 +20,7 @@ public class CustomView extends View {
     private final int length_x = 10;
     private final int length_y = 10;
 
-    private Paint black;
+    private Paint black,gray;
     private List<Blockchain> blockchain;
     private List<int[][]> matrix;
     private Circle[][] board;
@@ -88,6 +89,10 @@ public class CustomView extends View {
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         black.setColor(Color.BLACK);
         black.setStyle(Paint.Style.STROKE);
+
+        gray = new Paint(Paint.ANTI_ALIAS_FLAG);
+        gray.setColor(Color.GRAY);
+        gray.setStyle(Paint.Style.FILL);
     }
 
     public void onDraw(final Canvas canvas){
@@ -102,8 +107,6 @@ public class CustomView extends View {
 
         int tranche = step/11;
 
-        int k = 0;
-
         int i=1;
         while (i < 11){
             //horizontal
@@ -112,6 +115,13 @@ public class CustomView extends View {
             canvas.drawLine(tranche,i*tranche,10*tranche,i*tranche,black);
             i++;
         }
+
+        for(int j = 0; j<board.length;j++)
+            for(int k = 0; k<board[j].length;k++) {
+            board[j][k].setPosX((1+k)*tranche);
+            board[j][k].setPosY((1+j)*tranche);
+            canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),gray);
+            }
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -157,6 +167,19 @@ public class CustomView extends View {
 
 
         return result;
+    }
+
+    public Pair<Integer,Integer> getCoordMatrix(Circle circle) throws Exception{
+
+        for(int i = 0;i<board.length;i++)
+        {
+            for(int j = 0;j<board[i].length;j++)
+            {
+                 if(board[i][j].equals(circle))
+                    return new Pair<>(i, j);
+                 }
+        }
+        return null;
     }
 }
 
