@@ -15,6 +15,7 @@ public class Circle {
         this.posY = posY;
         this.radius = 0;
         this.liberties = 0;
+        //this.color = grey;
     }
 
     public int getPosX() {

@@ -33,6 +33,8 @@ public class CustomView extends View {
     private float touchx;
     private float touchy;
 
+    private int turn = 1;
+
     //default constructor
     public CustomView(Context c) {
         super(c);
@@ -268,17 +270,24 @@ public class CustomView extends View {
     }
 
     private void placement(){
-//change la couleur du cercle si on a appuyer a cote
+
         for(int j = 0; j<board.length;j++)
             for(int k = 0; k<board[j].length;k++) {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
                         && board[j][k].getRadius()==0){
                     board[j][k].setRadius(tranche/2);
-                    board[j][k].setColor(black);
+                    //board[j][k].setColor(currentPaint());
+                    turn++;
                 }
             }
     }
 
-
+    private Paint currentPaint(){
+        //return paint of the current player
+        if(turn%2==0){
+            return circleWhite;
+        }
+        return circleBlack;
+    }
 }
 
