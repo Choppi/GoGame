@@ -8,11 +8,14 @@ public class Blockchain {
     private int libertyNumber;
     private ArrayList<Circle> circleList;
     private ArrayList<Pair<Integer,Integer>> eyeList;
+    private ArrayList<Circle> freeNeighborsCircles;
 
-    public Blockchain(ArrayList<Circle> circleList, int libertyNumber) {
-        //constructor needs a list of circle and the liberties number of this list
+    public Blockchain(ArrayList<Circle> circleList) {
+        //constructor needs a list of circle
         this.circleList = circleList;
-        this.libertyNumber = libertyNumber;
+        this.libertyNumber = 0;
+        this.freeNeighborsCircles = new ArrayList<>();
+        this.eyeList = new ArrayList<>();
     }
 
     public int getLibertyNumber() {
@@ -39,6 +42,14 @@ public class Blockchain {
         this.eyeList = eyeList;
     }
 
+    public ArrayList<Circle> getNeighborsCircles() {
+        return freeNeighborsCircles;
+    }
+
+    public void setNeighborsCircles(ArrayList<Circle> neighborsCircles) {
+        this.freeNeighborsCircles = neighborsCircles;
+    }
+
     public Boolean contains(Circle circle){
         //return true if the element is in the list
         for (Circle c : circleList){
@@ -54,8 +65,16 @@ public class Blockchain {
         return circleList.size();
     }
 
-    private int sizeEyeList(){
+    public int sizeEyeList(){
         //return eyes number
         return eyeList.size();
     }
+/*
+    public void searchFreeNeighbors(){
+        for(Circle c:circleList){
+            int x=c.getPosX();
+            int y=c.getPosY();
+
+        }
+    }*/
 }
