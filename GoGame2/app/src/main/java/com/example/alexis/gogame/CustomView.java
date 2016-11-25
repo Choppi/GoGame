@@ -263,6 +263,21 @@ public class CustomView extends View {
         return false;
     }
 
+    public Boolean AmIDead(Circle c) {
+        //return true if a colored circle as no empty neighbors and all of his neighbors are
+        // colored in the opposite color
+        if (c.getRadius() == 0) {
+
+            for (Circle n : myNeigbhors(c)) {
+                if (n.getRadius() == 0 || n.getColor() == currentPaint()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
     private boolean measureDistance(float ax, float bx, float ay, float by){
         float maximalDistance = tranche/2;//minimal distance between 2 circle /2
 
@@ -275,8 +290,16 @@ public class CustomView extends View {
             for(int k = 0; k<board[j].length;k++) {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
                         && board[j][k].getRadius()==0){
+                    //check regle ko
+                    //check des yeux
+                    //changement du circle
                     board[j][k].setRadius(tranche/2);
                     //board[j][k].setColor(currentPaint());
+                    //suppression des unités
+                    removeSimpleCircle();
+                    //suppression des groupes
+                    //sauvegarde de la matrice actuelle dans une list
+                    //fin du tour
                     turn++;
                 }
             }
@@ -288,6 +311,17 @@ public class CustomView extends View {
             return circleWhite;
         }
         return circleBlack;
+    }
+
+    private void removeSimpleCircle() {
+        for (int j = 0; j < board.length; j++)
+            for (int k = 0; k < board[j].length; k++) {
+                if (board[j][k].getColor() != currentPaint()
+                        && board[j][k].getRadius() != 0
+                        && AmIDead(board[j][k])) {
+                    board[j][k].setRadius(0);
+                }
+            }
     }
 }
 
