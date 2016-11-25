@@ -84,7 +84,7 @@ public class CustomView extends View {
         int height = getHeight();
         int step = Math.min(width, height);
 
-        float tranche = (float)step/11;
+        int tranche = step/11;
 
         int k = 0;
 
