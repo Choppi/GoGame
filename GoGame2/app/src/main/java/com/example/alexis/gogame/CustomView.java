@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 //class definition
 public class CustomView extends View {
@@ -24,6 +25,13 @@ public class CustomView extends View {
     private List<Blockchain> blockchain;
     private List<int[][]> matrix;
     private Circle[][] board;
+
+    private int step;
+    private int tranche;
+
+    private boolean touch;
+    private float touchx;
+    private float touchy;
 
     //default constructor
     public CustomView(Context c) {
@@ -109,9 +117,9 @@ public class CustomView extends View {
         int width = getWidth();
         // Hauteur de la vue
         int height = getHeight();
-        int step = Math.min(width, height);
+        step = Math.min(width, height);
 
-        int tranche = step/11;
+        tranche = step/11;
 
         int i=1;
         while (i < 11){
@@ -128,9 +136,31 @@ public class CustomView extends View {
             board[j][k].setPosY((1+j)*tranche);
             canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),gray);
             }
+
+
+        placement();
     }
 
     public boolean onTouchEvent(MotionEvent event) {
+
+
+        // determine what kind of touch event we have
+
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN){
+
+            touch = true;
+            touchx = event.getX();
+            touchy = event.getY();
+            invalidate();
+            return true;
+            //}
+        }
+
+        if(event.getActionMasked()== MotionEvent.ACTION_UP){
+            touch=false;
+            return true;
+        }
+
         return super.onTouchEvent(event);
     }
 
@@ -224,10 +254,31 @@ public class CustomView extends View {
             //add the element in the eyeList of the blockchain
             for (Blockchain b:blockchain){
                 b.getEyeList().add(c);
+                //attention on risque de creer des doublons
             }
             return true;
         }
         return false;
     }
+
+    private boolean measureDistance(float ax, float bx, float ay, float by){
+        float maximalDistance = tranche/2;//minimal distance between 2 circle /2
+
+        return Math.sqrt((ax-bx)*(ax-bx)+(ay-by)*(ay-by)) < maximalDistance;
+    }
+
+    private void placement(){
+//change la couleur du cercle si on a appuyer a cote
+        for(int j = 0; j<board.length;j++)
+            for(int k = 0; k<board[j].length;k++) {
+                if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
+                        && board[j][k].getRadius()==0){
+                    board[j][k].setRadius(tranche/2);
+                    board[j][k].setColor(black);
+                }
+            }
+    }
+
+
 }
 
