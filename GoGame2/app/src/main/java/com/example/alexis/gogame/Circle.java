@@ -1,11 +1,14 @@
 package com.example.alexis.gogame;
 
 
+import android.graphics.Paint;
+
 public class Circle {
     private int posX;
     private int posY;
     private int radius;
     private int liberties;
+    private Paint color;
 
     public Circle(int posX, int posY) {
         this.posX = posX;
@@ -44,5 +47,13 @@ public class Circle {
 
     public void setLiberties(int liberties) {
         this.liberties = liberties;
+    }
+
+    public Paint getColor() {
+        return color;
+    }
+
+    public void setColor(Paint color) {
+        this.color = color;
     }
 }

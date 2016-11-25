@@ -20,7 +20,7 @@ public class CustomView extends View {
     private final int length_x = 10;
     private final int length_y = 10;
 
-    private Paint black,gray;
+    private Paint black,gray,circleBlack,circleWhite;
     private List<Blockchain> blockchain;
     private List<int[][]> matrix;
     private Circle[][] board;
@@ -81,6 +81,7 @@ public class CustomView extends View {
         blockchain = new ArrayList<>();
         matrix = new ArrayList<>();
         board = new Circle[length_x][length_y];
+
         for(int i = 0;i<board.length;i++)
             for(int j = 0;j<board[i].length;j++)
                 board[i][j] = new Circle(0,0);
@@ -93,6 +94,11 @@ public class CustomView extends View {
         gray = new Paint(Paint.ANTI_ALIAS_FLAG);
         gray.setColor(Color.GRAY);
         gray.setStyle(Paint.Style.FILL);
+
+        circleBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
+        circleBlack.setColor(Color.BLACK);
+        circleWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
+        circleWhite.setColor(Color.WHITE);
     }
 
     public void onDraw(final Canvas canvas){
@@ -180,6 +186,48 @@ public class CustomView extends View {
                  }
         }
         return null;
+    }
+
+    public Boolean searchFreeNeighbors(ArrayList<Circle> circleList){
+        //return true if the chain has at least one free neighbors
+        for(Circle c:circleList){
+            for (Circle n:myNeigbhors(c)){
+                if(n.getRadius()==0){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Boolean AmIAnEye(Circle c){
+        //return true if a not colored circle as no empty neighbors and all of his neighbors are
+        // colored in the same color
+        //add the element in the eyeList
+        int numberOfWhite=0;
+        int numberOfBlack=0;
+        if(c.getRadius()==0){
+
+            for (Circle n:myNeigbhors(c)){
+                if(n.getRadius()==0){
+                    return false;
+                }
+                else if(n.getColor()==circleBlack){
+                    numberOfBlack++;
+                }
+                else if(n.getColor()==circleWhite){
+                    numberOfWhite++;
+                }
+            }
+        }
+        if(numberOfBlack==0||numberOfWhite==0){
+            //add the element in the eyeList of the blockchain
+            for (Blockchain b:blockchain){
+                b.getEyeList().add(c);
+            }
+            return true;
+        }
+        return false;
     }
 }
 
