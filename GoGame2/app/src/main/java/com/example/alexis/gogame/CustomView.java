@@ -84,16 +84,15 @@ public class CustomView extends View {
         int height = getHeight();
         int step = Math.min(width, height);
 
-        float tranche = (float)step*0.1f;
+        float tranche = (float)step/11;
 
-        //canvas.drawRect(step * 0.125f, step * 0.125f, step * 0.875f, step * 0.875f, black);
 
-        int i=0;
-        while (i < 10){
+        int i=1;
+        while (i < 11){
             //horizontal
-            canvas.drawLine(step * 0.125f+tranche*i, step * 0.125f,step * 0.125f+tranche*i, step * 0.875f, black);
+            canvas.drawLine(i*tranche,tranche,i*tranche,10*tranche,black);
             //vertical
-            canvas.drawLine(step * 0.125f, step * 0.125f+tranche*i, step * 0.875f, step * 0.125f+tranche*i, black);
+            canvas.drawLine(tranche,i*tranche,10*tranche,i*tranche,black);
             i++;
         }
     }
