@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 //class definition
 public class CustomView extends View {
@@ -20,11 +21,19 @@ public class CustomView extends View {
     private final int length_x = 10;
     private final int length_y = 10;
 
-    private Paint black;
-    private Paint gray;
+    private Paint black,gray,circleBlack,circleWhite;
     private List<Blockchain> blockchain;
     private List<int[][]> matrix;
     private Circle[][] board;
+
+    private int step;
+    private int tranche;
+
+    private boolean touch;
+    private float touchx;
+    private float touchy;
+
+    private int turn = 1;
 
     //default constructor
     public CustomView(Context c) {
@@ -81,15 +90,12 @@ public class CustomView extends View {
     public void init() {
         blockchain = new ArrayList<>();
         matrix = new ArrayList<>();
-        board = new Circle[10][10];
-        for(int i = 0;i<board.length;i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                System.out.println("j2 = "+j);
-                System.out.println("i 3= "+j);
+        board = new Circle[length_x][length_y];
 
-                board[i][j] = new Circle(0, 0);
-            }
-        }
+        for(int i = 0;i<board.length;i++)
+            for(int j = 0;j<board[i].length;j++)
+                board[i][j] = new Circle(0,0);
+
 
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         black.setColor(Color.BLACK);
@@ -98,6 +104,11 @@ public class CustomView extends View {
         gray = new Paint(Paint.ANTI_ALIAS_FLAG);
         gray.setColor(Color.GRAY);
         gray.setStyle(Paint.Style.FILL);
+
+        circleBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
+        circleBlack.setColor(Color.BLACK);
+        circleWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
+        circleWhite.setColor(Color.WHITE);
     }
 
     public void onDraw(final Canvas canvas){
@@ -108,9 +119,9 @@ public class CustomView extends View {
         int width = getWidth();
         // Hauteur de la vue
         int height = getHeight();
-        int step = Math.min(width, height);
+        step = Math.min(width, height);
 
-        int tranche = step/11;
+        tranche = step/11;
 
         int i=1;
         while (i < 11){
@@ -123,30 +134,160 @@ public class CustomView extends View {
 
         for(int j = 0; j<board.length;j++)
             for(int k = 0; k<board[j].length;k++) {
-                board[j][k].setPosX(k*tranche);
-                board[j][k].setPosY(j*tranche);
-                canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),gray);
+            board[j][k].setPosX((1+k)*tranche);
+            board[j][k].setPosY((1+j)*tranche);
+            canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),gray);
             }
+
+
+        placement();
     }
 
     public boolean onTouchEvent(MotionEvent event) {
 
 
+        // determine what kind of touch event we have
+
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN){
+
+            touch = true;
+            touchx = event.getX();
+            touchy = event.getY();
+            invalidate();
+            return true;
+            //}
+        }
+
+        if(event.getActionMasked()== MotionEvent.ACTION_UP){
+            touch=false;
+            return true;
+        }
+
         return super.onTouchEvent(event);
     }
 
-    public Pair<Integer,Integer> getCoordMatrix(Circle circle) throws Exception{
+    public ArrayList<Circle> myNeigbhors(Circle c){
+        ArrayList<Circle> result = new ArrayList<>();
 
-            for(int i = 0;i<board.length;i++)
+        int x=getCoordMatrix(c).first;
+        int y=getCoordMatrix(c).second;
+
+        if(x<9&&x>0&&y<9&&y>0){
+            result.add(board[x-1][y]);
+            result.add(board[x+1][y]);
+            result.add(board[x][y-1]);
+            result.add(board[x][y+1]);
+        }
+
+        if(y==0&&x>0&&x<9){
+            result.add(board[x-1][y]);
+            result.add(board[x+1][y]);
+            result.add(board[x][y+1]);
+        }
+
+        if(y==9&&x>0&&x<9){
+            result.add(board[x-1][y]);
+            result.add(board[x+1][y]);
+            result.add(board[x][y-1]);
+        }
+
+        if(x==9&&y>0&&y<9){
+            result.add(board[x][y-1]);
+            result.add(board[x][y+1]);
+            result.add(board[x-1][y]);
+        }
+
+        if(x==0&&y>0&&y<9){
+            result.add(board[x][y-1]);
+            result.add(board[x][y+1]);
+            result.add(board[x+1][y]);
+        }
+
+
+        return result;
+    }
+
+    public Pair<Integer,Integer> getCoordMatrix(Circle circle){
+
+        for(int i = 0;i<board.length;i++)
+        {
+            for(int j = 0;j<board[i].length;j++)
             {
-                for(int j = 0;j<board[i].length;j++)
-                {
-                    if(board[i][j].equals(circle))
-                        return new Pair<>(i, j);
-                }
-            }
+                 if(board[i][j].equals(circle))
+                    return new Pair<>(i, j);
+                 }
+        }
         return null;
     }
 
+    public Boolean searchFreeNeighbors(ArrayList<Circle> circleList){
+        //return true if the chain has at least one free neighbors
+        for(Circle c:circleList){
+            for (Circle n:myNeigbhors(c)){
+                if(n.getRadius()==0){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Boolean AmIAnEye(Circle c){
+        //return true if a not colored circle as no empty neighbors and all of his neighbors are
+        // colored in the same color
+        //add the element in the eyeList
+        int numberOfWhite=0;
+        int numberOfBlack=0;
+        if(c.getRadius()==0){
+
+            for (Circle n:myNeigbhors(c)){
+                if(n.getRadius()==0){
+                    return false;
+                }
+                else if(n.getColor()==circleBlack){
+                    numberOfBlack++;
+                }
+                else if(n.getColor()==circleWhite){
+                    numberOfWhite++;
+                }
+            }
+        }
+        if(numberOfBlack==0||numberOfWhite==0){
+            //add the element in the eyeList of the blockchain
+            for (Blockchain b:blockchain){
+                b.getEyeList().add(c);
+                //attention on risque de creer des doublons
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean measureDistance(float ax, float bx, float ay, float by){
+        float maximalDistance = tranche/2;//minimal distance between 2 circle /2
+
+        return Math.sqrt((ax-bx)*(ax-bx)+(ay-by)*(ay-by)) < maximalDistance;
+    }
+
+    private void placement(){
+
+        for(int j = 0; j<board.length;j++)
+            for(int k = 0; k<board[j].length;k++) {
+                if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
+                        && board[j][k].getRadius()==0){
+                    board[j][k].setRadius(tranche/2);
+                    //board[j][k].setColor(currentPaint());
+                    turn++;
+                }
+            }
+    }
+
+    private Paint currentPaint(){
+        //return paint of the current player
+        if(turn%2==0){
+            return circleWhite;
+        }
+        return circleBlack;
+    }
 }
 

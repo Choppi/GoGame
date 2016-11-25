@@ -5,26 +5,27 @@ import android.util.Pair;
 import java.util.ArrayList;
 
 public class Blockchain {
-    private int libertyNumber;
+    //private int libertyNumber;
     private ArrayList<Circle> circleList;
-    private ArrayList<Pair<Integer,Integer>> eyeList;
-    private ArrayList<Circle> freeNeighborsCircles;
+    //private ArrayList<Pair<Integer,Integer>> eyeList;
+    private ArrayList<Circle> eyeList;
+    //private ArrayList<Circle> freeNeighborsCircles;
 
     public Blockchain(ArrayList<Circle> circleList) {
         //constructor needs a list of circle
         this.circleList = circleList;
-        this.libertyNumber = 0;
-        this.freeNeighborsCircles = new ArrayList<>();
+        //this.libertyNumber = 0;
+        //this.freeNeighborsCircles = new ArrayList<>();
         this.eyeList = new ArrayList<>();
     }
 
-    public int getLibertyNumber() {
+    /*public int getLibertyNumber() {
         return libertyNumber;
     }
 
     public void setLibertyNumber(int libertyNumber) {
         this.libertyNumber = libertyNumber;
-    }
+    }*/
 
     public ArrayList<Circle> getCircleList() {
         return circleList;
@@ -34,21 +35,22 @@ public class Blockchain {
         this.circleList = circleList;
     }
 
-    public ArrayList<Pair<Integer, Integer>> getEyeList() {
+    public ArrayList<Circle> getEyeList() {
         return eyeList;
     }
 
-    public void setEyeList(ArrayList<Pair<Integer, Integer>> eyeList) {
+    public void setEyeList(ArrayList<Circle> eyeList) {
         this.eyeList = eyeList;
     }
 
+/*
     public ArrayList<Circle> getNeighborsCircles() {
         return freeNeighborsCircles;
     }
 
     public void setNeighborsCircles(ArrayList<Circle> neighborsCircles) {
         this.freeNeighborsCircles = neighborsCircles;
-    }
+    }*/
 
     public Boolean contains(Circle circle){
         //return true if the element is in the list
@@ -69,12 +71,4 @@ public class Blockchain {
         //return eyes number
         return eyeList.size();
     }
-/*
-    public void searchFreeNeighbors(){
-        for(Circle c:circleList){
-            int x=c.getPosX();
-            int y=c.getPosY();
-
-        }
-    }*/
 }
