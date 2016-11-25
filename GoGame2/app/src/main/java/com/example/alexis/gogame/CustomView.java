@@ -81,7 +81,7 @@ public class CustomView extends View {
         matrix = new ArrayList<>();
         board = new Circle[length_x][length_y];
         for(int i = 0;i<board.length;i++)
-            for(int j = 0;i<board[i].length;j++)
+            for(int j = 0;j<board[i].length;j++)
                 board[i][j] = new Circle(0,0);
 
 
