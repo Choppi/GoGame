@@ -82,8 +82,11 @@ public class CustomView extends View {
         blockchain = new ArrayList<>();
         matrix = new ArrayList<>();
         board = new Circle[10][10];
-        for(int i = 0;i<board.length-1;i++) {
-            for (int j = 0; i < board[i].length - 1; j++) {
+        for(int i = 0;i<board.length;i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                System.out.println("j = "+j);
+                System.out.println("i = "+j);
+
                 board[i][j] = new Circle(0, 0);
             }
         }
