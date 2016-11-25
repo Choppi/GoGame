@@ -109,6 +109,8 @@ public class CustomView extends View {
         circleBlack.setColor(Color.BLACK);
         circleWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
         circleWhite.setColor(Color.WHITE);
+
+
     }
 
     public void onDraw(final Canvas canvas){
@@ -203,6 +205,25 @@ public class CustomView extends View {
             result.add(board[x+1][y]);
         }
 
+        if(x==0&&y==0){
+            result.add(board[x+1][y]);
+            result.add(board[x][y+1]);
+        }
+
+        if(x==9&&y==0){
+            result.add(board[x-1][y]);
+            result.add(board[x][y+1]);
+        }
+
+        if(x==0&&y==9){
+            result.add(board[x+1][y]);
+            result.add(board[x][y-1]);
+        }
+
+        if(x==9&&y==9){
+            result.add(board[x-1][y]);
+            result.add(board[x][y-1]);
+        }
 
         return result;
     }
@@ -263,20 +284,6 @@ public class CustomView extends View {
         return false;
     }
 
-    public Boolean AmIDead(Circle c) {
-        //return true if a colored circle as no empty neighbors and all of his neighbors are
-        // colored in the opposite color
-        if (c.getRadius() == 0) {
-
-            for (Circle n : myNeigbhors(c)) {
-                if (n.getRadius() == 0 || n.getPaint() == currentPaint()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
 
     private boolean measureDistance(float ax, float bx, float ay, float by){
         float maximalDistance = tranche/2;//minimal distance between 2 circle /2
@@ -296,7 +303,8 @@ public class CustomView extends View {
                     board[j][k].setRadius(tranche/2);
                     board[j][k].setColor(currentPaint());
                     //suppression des unités
-                    //removeSimpleCircle();
+
+                    removeSimpleCircle(board[j][k]);
                     //suppression des groupes
                     //sauvegarde de la matrice actuelle dans une list
                     //fin du tour
@@ -315,15 +323,33 @@ public class CustomView extends View {
 
     }
 
-    private void removeSimpleCircle() {
-        for (int j = 0; j < board.length; j++)
-            for (int k = 0; k < board[j].length; k++) {
-                if (board[j][k].getPaint() != currentPaint()
-                        && board[j][k].getRadius() != 0
-                        && AmIDead(board[j][k])) {
-                    board[j][k].setRadius(0);
+    private void removeSimpleCircle(Circle c) {
+        //on va chercher tous les voisins du jetons. Pour chaque voisins ennemis, on va vérifier si on peut l'enlever
+        int opposant=0;
+
+        for(Circle n : myNeigbhors(c)){
+
+            if(n.getRadius()!=0&&
+                    n.getPaint()!=c.getPaint()){
+
+                opposant=0;
+
+                for(Circle m : myNeigbhors(n)){
+
+                    if(n.getRadius()!=0&&
+                            m.getPaint()==c.getPaint()){
+                        opposant++;
+                        System.out.println(opposant);
+                    }
+                }
+                if (opposant==myNeigbhors(n).size()){
+                    System.out.println("suppression");
+                    n.setRadius(0);
                 }
             }
+
+        }
+
     }
 }
 
