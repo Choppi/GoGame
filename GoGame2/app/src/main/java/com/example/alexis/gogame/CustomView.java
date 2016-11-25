@@ -128,11 +128,11 @@ public class CustomView extends View {
         return super.onTouchEvent(event);
     }
 
-    public ArrayList<Circle> myNeigbhors(){
+    public ArrayList<Circle> myNeigbhors(Circle c){
         ArrayList<Circle> result = new ArrayList<>();
 
-        int x=0;
-        int y=0;
+        int x=getCoordMatrix(c).first;
+        int y=getCoordMatrix(c).second;
 
         if(x<9&&x>0&&y<9&&y>0){
             result.add(board[x-1][y]);
@@ -169,7 +169,7 @@ public class CustomView extends View {
         return result;
     }
 
-    public Pair<Integer,Integer> getCoordMatrix(Circle circle) throws Exception{
+    public Pair<Integer,Integer> getCoordMatrix(Circle circle){
 
         for(int i = 0;i<board.length;i++)
         {
