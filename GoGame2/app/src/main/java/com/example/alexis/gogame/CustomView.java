@@ -86,6 +86,7 @@ public class CustomView extends View {
 
         float tranche = (float)step/11;
 
+        int k = 0;
 
         int i=1;
         while (i < 11){
