@@ -4,14 +4,16 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 
-/**
- * Created by maxim on 25/11/2016.
- */
-
 public class Blockchain {
     private int libertyNumber;
     private ArrayList<Circle> circleList;
     private ArrayList<Pair<Integer,Integer>> eyeList;
+
+    public Blockchain(ArrayList<Circle> circleList, int libertyNumber) {
+        //constructor needs a list of circle and the liberties number of this list
+        this.circleList = circleList;
+        this.libertyNumber = libertyNumber;
+    }
 
     public int getLibertyNumber() {
         return libertyNumber;
