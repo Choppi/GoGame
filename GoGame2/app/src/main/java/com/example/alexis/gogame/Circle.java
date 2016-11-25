@@ -8,13 +8,14 @@ public class Circle {
     private int posY;
     private int radius;
     private int liberties;
-    private Paint color;
+    private Paint paint;
 
     public Circle(int posX, int posY) {
         this.posX = posX;
         this.posY = posY;
         this.radius = 0;
         this.liberties = 0;
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         //this.color = grey;
     }
 
@@ -50,11 +51,11 @@ public class Circle {
         this.liberties = liberties;
     }
 
-    public Paint getColor() {
-        return color;
+    public Paint getPaint() {
+        return paint;
     }
 
-    public void setColor(Paint color) {
-        this.color = color;
+    public void setColor(Paint paint) {
+        this.paint = paint;
     }
 }

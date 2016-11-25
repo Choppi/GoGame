@@ -101,10 +101,6 @@ public class CustomView extends View {
         black.setColor(Color.BLACK);
         black.setStyle(Paint.Style.STROKE);
 
-        gray = new Paint(Paint.ANTI_ALIAS_FLAG);
-        gray.setColor(Color.GRAY);
-        gray.setStyle(Paint.Style.FILL);
-
         circleBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
         circleBlack.setColor(Color.BLACK);
         circleWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -136,11 +132,8 @@ public class CustomView extends View {
             for(int k = 0; k<board[j].length;k++) {
             board[j][k].setPosX((1+k)*tranche);
             board[j][k].setPosY((1+j)*tranche);
-            canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),gray);
+            canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),board[j][k].getPaint());
             }
-
-
-        placement();
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -153,6 +146,7 @@ public class CustomView extends View {
             touch = true;
             touchx = event.getX();
             touchy = event.getY();
+            placement();
             invalidate();
             return true;
             //}
@@ -162,7 +156,6 @@ public class CustomView extends View {
             touch=false;
             return true;
         }
-
         return super.onTouchEvent(event);
     }
 
@@ -244,10 +237,10 @@ public class CustomView extends View {
                 if(n.getRadius()==0){
                     return false;
                 }
-                else if(n.getColor()==circleBlack){
+                else if(n.getPaint().getColor()==Color.BLACK){
                     numberOfBlack++;
                 }
-                else if(n.getColor()==circleWhite){
+                else if(n.getPaint().getColor() == Color.WHITE){
                     numberOfWhite++;
                 }
             }
@@ -276,18 +269,18 @@ public class CustomView extends View {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
                         && board[j][k].getRadius()==0){
                     board[j][k].setRadius(tranche/2);
-                    //board[j][k].setColor(currentPaint());
-                    turn++;
+                    board[j][k].getPaint().setColor(currentPaint());
+                    turn = (turn + 1)%2;
                 }
             }
     }
 
-    private Paint currentPaint(){
+    private int currentPaint(){
         //return paint of the current player
         if(turn%2==0){
-            return circleWhite;
+            return Color.WHITE;
         }
-        return circleBlack;
+        return Color.BLACK;
     }
 }
 
