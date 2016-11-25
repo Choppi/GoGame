@@ -117,5 +117,46 @@ public class CustomView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         return super.onTouchEvent(event);
     }
+
+    public ArrayList<Circle> myNeigbhors(){
+        ArrayList<Circle> result = new ArrayList<>();
+
+        int x=0;
+        int y=0;
+
+        if(x<9&&x>0&&y<9&&y>0){
+            result.add(board[x-1][y]);
+            result.add(board[x+1][y]);
+            result.add(board[x][y-1]);
+            result.add(board[x][y+1]);
+        }
+
+        if(y==0&&x>0&&x<9){
+            result.add(board[x-1][y]);
+            result.add(board[x+1][y]);
+            result.add(board[x][y+1]);
+        }
+
+        if(y==9&&x>0&&x<9){
+            result.add(board[x-1][y]);
+            result.add(board[x+1][y]);
+            result.add(board[x][y-1]);
+        }
+
+        if(x==9&&y>0&&y<9){
+            result.add(board[x][y-1]);
+            result.add(board[x][y+1]);
+            result.add(board[x-1][y]);
+        }
+
+        if(x==0&&y>0&&y<9){
+            result.add(board[x][y-1]);
+            result.add(board[x][y+1]);
+            result.add(board[x+1][y]);
+        }
+
+
+        return result;
+    }
 }
 
