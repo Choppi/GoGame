@@ -253,8 +253,8 @@ public class CustomView extends View {
         return false;
     }
 
-    public Boolean AmIAnEye(Circle c){
-        //return true if a not colored circle as no empty neighbors and all of his neighbors are
+    public boolean AmIAnEye(Circle c){
+        //return true if a not colored circle has no empty neighbors and all of his neighbors are
         // colored in the same color
         //add the element in the eyeList
         int numberOfWhite=0;
@@ -297,6 +297,7 @@ public class CustomView extends View {
             for(int k = 0; k<board[j].length;k++) {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
                         && board[j][k].getRadius()==0){
+                    //mise a jour blockchain
                     //check regle ko
                     //check des yeux
                     //changement du circle
@@ -317,10 +318,8 @@ public class CustomView extends View {
         //return paint of the current player
         if(turn%2==0){
             return circleWhite;
-
         }
         return circleBlack;
-
     }
 
     private void removeSimpleCircle(Circle c) {
@@ -345,6 +344,7 @@ public class CustomView extends View {
                 if (opposant==myNeigbhors(n).size()){
                     System.out.println("suppression");
                     n.setRadius(0);
+                    n.setColor(gray);
                 }
             }
 
