@@ -141,8 +141,6 @@ public class CustomView extends View {
             canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),board[j][k].getPaint());
             }
 
-
-        placement();
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -155,6 +153,8 @@ public class CustomView extends View {
             touch = true;
             touchx = event.getX();
             touchy = event.getY();
+
+            placement();
             invalidate();
             return true;
             //}
@@ -306,12 +306,20 @@ public class CustomView extends View {
                     //suppression des unités
 
                     removeSimpleCircle(board[j][k]);
+                    addToBlockCHain(board[j][k]);
                     //suppression des groupes
                     //sauvegarde de la matrice actuelle dans une list
                     //fin du tour
-                    turn++;
+                    turn = (turn + 1)%2;
                 }
             }
+    }
+
+    private void addToBlockCHain(Circle circle) {
+        for(Circle c : myNeigbhors(circle))
+        {
+
+        }
     }
 
     private Paint currentPaint(){
@@ -328,21 +336,19 @@ public class CustomView extends View {
 
         for(Circle n : myNeigbhors(c)){
 
-            if(n.getRadius()!=0&&
-                    n.getPaint()!=c.getPaint()){
+            if(n.getRadius()!=0 && n.getPaint()!=c.getPaint())
+            {
 
                 opposant=0;
 
                 for(Circle m : myNeigbhors(n)){
 
-                    if(n.getRadius()!=0&&
-                            m.getPaint()==c.getPaint()){
+                    if(n.getRadius()!=0 && m.getPaint()==c.getPaint()){
                         opposant++;
                         System.out.println(opposant);
                     }
                 }
                 if (opposant==myNeigbhors(n).size()){
-                    System.out.println("suppression");
                     n.setRadius(0);
                     n.setColor(gray);
                 }
