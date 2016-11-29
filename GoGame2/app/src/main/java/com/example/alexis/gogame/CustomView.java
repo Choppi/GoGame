@@ -341,9 +341,35 @@ public class CustomView extends View {
     }
 
     private void addToBlockCHain(Circle circle) {
+
+        boolean blockCreatedOrAdded = false;
+        Blockchain current_blockchain = new Blockchain(new ArrayList<Circle>());
+
         for(Circle c : myNeigbhors(circle))
         {
-
+            if(c.getRadius() != 0 && c.getPaint().equals(circle.getPaint()))
+            {
+                for(Blockchain element : blockchain)
+                {
+                    if(element.contains(c) && !element.contains(circle) && !blockCreatedOrAdded)
+                    {
+                        element.getCircleList().add(circle);
+                        current_blockchain = element;
+                        blockCreatedOrAdded = true;
+                    }
+                    else if(element.contains(c) && !element.contains(circle) && blockCreatedOrAdded)
+                    {
+                        current_blockchain.getCircleList().add(c);
+                        blockchain.remove(element);
+                    }
+                }
+            }
+            else
+            {
+                ArrayList<Circle> newlist = new ArrayList<>();
+                newlist.add(circle);
+                blockchain.add(new Blockchain(newlist));
+            }
         }
     }
 
