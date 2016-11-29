@@ -330,14 +330,22 @@ public class CustomView extends View {
                     //suppression des unités
 
                     removeSimpleCircle(board[j][k]);
-                    removeBlockchain(board[j][k]);
+
                     addToBlockCHain(board[j][k]);
+                    removeBlockchain(board[j][k]);
                     //suppression des groupes
                     //sauvegarde de la matrice actuelle dans une list
                     //fin du tour
                     turn = (turn + 1)%2;
                 }
             }
+            System.out.println("Block Chain size : "+blockchain.size());
+            for(Blockchain element : blockchain)
+            {
+                System.out.println("Number of circle : "+element.getCircleList().size());
+
+            }
+
     }
 
     private void addToBlockCHain(Circle circle) {
@@ -364,13 +372,15 @@ public class CustomView extends View {
                     }
                 }
             }
-            else
-            {
-                ArrayList<Circle> newlist = new ArrayList<>();
-                newlist.add(circle);
-                blockchain.add(new Blockchain(newlist));
-            }
         }
+        if(!blockCreatedOrAdded)
+        {
+            ArrayList<Circle> newlist = new ArrayList<>();
+            newlist.add(circle);
+            blockchain.add(new Blockchain(newlist));
+            System.out.println("Test");
+        }
+
         for(Blockchain to_remove : blockchains_to_remove)
             blockchain.remove(to_remove);
 
