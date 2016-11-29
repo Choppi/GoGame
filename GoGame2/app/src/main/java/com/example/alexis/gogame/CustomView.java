@@ -256,7 +256,7 @@ public class CustomView extends View {
     public void removeBlockchain(Circle c){
         //on va chercher tous les voisins du jetons. Pour chaque voisins ennemis, on va vérifier si
         //il appartient à une blockchain
-        ArrayList<Blockchain> to_remove = new ArrayList<>();
+
         for(Circle n : myNeigbhors(c)){
 
             if(n.getRadius()!=0 && n.getPaint()!=c.getPaint())
@@ -270,13 +270,9 @@ public class CustomView extends View {
                             m.setRadius(0);
                             m.setColor(gray);
                         }
-                        to_remove.add(b);
                     }
                 }
             }
-        }
-        for(Blockchain element : to_remove){
-            blockchain.remove(element);
         }
     }
 
@@ -334,21 +330,29 @@ public class CustomView extends View {
                     //suppression des unités
 
                     removeSimpleCircle(board[j][k]);
-                    removeBlockchain(board[j][k]);
+
                     addToBlockCHain(board[j][k]);
+                    removeBlockchain(board[j][k]);
                     //suppression des groupes
                     //sauvegarde de la matrice actuelle dans une list
                     //fin du tour
                     turn = (turn + 1)%2;
                 }
             }
+            System.out.println("Block Chain size : "+blockchain.size());
+            for(Blockchain element : blockchain)
+            {
+                System.out.println("Number of circle : "+element.getCircleList().size());
+
+            }
+
     }
 
     private void addToBlockCHain(Circle circle) {
 
         boolean blockCreatedOrAdded = false;
         Blockchain current_blockchain = new Blockchain(new ArrayList<Circle>());
-
+        ArrayList<Blockchain> blockchains_to_remove = new ArrayList<>();
         for(Circle c : myNeigbhors(circle))
         {
             if(c.getRadius() != 0 && c.getPaint().equals(circle.getPaint()))
@@ -363,18 +367,23 @@ public class CustomView extends View {
                     }
                     else if(element.contains(c) && !element.contains(circle) && blockCreatedOrAdded)
                     {
-                        current_blockchain.getCircleList().add(c);
-                        blockchain.remove(element);
+                        current_blockchain.getCircleList().addAll(element.getCircleList());
+                        blockchains_to_remove.add(element);
                     }
                 }
             }
-            else
-            {
-                ArrayList<Circle> newlist = new ArrayList<>();
-                newlist.add(circle);
-                blockchain.add(new Blockchain(newlist));
-            }
         }
+        if(!blockCreatedOrAdded)
+        {
+            ArrayList<Circle> newlist = new ArrayList<>();
+            newlist.add(circle);
+            blockchain.add(new Blockchain(newlist));
+            System.out.println("Test");
+        }
+
+        for(Blockchain to_remove : blockchains_to_remove)
+            blockchain.remove(to_remove);
+
     }
 
     private Paint currentPaint(){
