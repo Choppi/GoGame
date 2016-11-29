@@ -256,7 +256,7 @@ public class CustomView extends View {
     public void removeBlockchain(Circle c){
         //on va chercher tous les voisins du jetons. Pour chaque voisins ennemis, on va vérifier si
         //il appartient à une blockchain
-
+        ArrayList<Blockchain> to_remove = new ArrayList<>();
         for(Circle n : myNeigbhors(c)){
 
             if(n.getRadius()!=0 && n.getPaint()!=c.getPaint())
@@ -269,11 +269,15 @@ public class CustomView extends View {
                         for(Circle m:b.getCircleList()){
                             m.setRadius(0);
                             m.setColor(gray);
+
                         }
+                        to_remove.add(b);
                     }
                 }
             }
         }
+        for(Blockchain element : to_remove)
+            blockchain.remove(element);
     }
 
     public boolean AmIAnEye(Circle c){
@@ -329,7 +333,7 @@ public class CustomView extends View {
                     board[j][k].setColor(currentPaint());
                     //suppression des unités
 
-                    removeSimpleCircle(board[j][k]);
+                    //removeSimpleCircle(board[j][k]);
                     removeBlockchain(board[j][k]);
                     addToBlockCHain(board[j][k]);
                     //suppression des groupes
@@ -360,7 +364,7 @@ public class CustomView extends View {
                     else if(element.contains(c) && !element.contains(circle) && blockCreatedOrAdded)
                     {
                         current_blockchain.getCircleList().add(c);
-                        blockchain.remove(element);
+                        //blockchain.remove(element);
                     }
                 }
             }
