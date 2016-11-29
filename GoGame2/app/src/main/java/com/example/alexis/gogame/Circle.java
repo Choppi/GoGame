@@ -16,7 +16,7 @@ public class Circle {
         this.radius = 0;
         this.liberties = 0;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        //this.color = grey;
+
     }
 
     public int getPosX() {
