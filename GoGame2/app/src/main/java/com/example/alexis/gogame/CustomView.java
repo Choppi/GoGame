@@ -318,7 +318,7 @@ public class CustomView extends View {
 
         boolean blockCreatedOrAdded = false;
         Blockchain current_blockchain = new Blockchain(new ArrayList<Circle>());
-
+        ArrayList<Blockchain> blockchains_to_remove = new ArrayList<>();
         for(Circle c : myNeigbhors(circle))
         {
             if(c.getRadius() != 0 && c.getPaint().equals(circle.getPaint()))
@@ -333,8 +333,8 @@ public class CustomView extends View {
                     }
                     else if(element.contains(c) && !element.contains(circle) && blockCreatedOrAdded)
                     {
-                        current_blockchain.getCircleList().add(c);
-                        blockchain.remove(element);
+                        current_blockchain.getCircleList().addAll(element.getCircleList());
+                        blockchains_to_remove.add(element);
                     }
                 }
             }
@@ -345,6 +345,9 @@ public class CustomView extends View {
                 blockchain.add(new Blockchain(newlist));
             }
         }
+        for(Blockchain to_remove : blockchains_to_remove)
+            blockchain.remove(to_remove);
+
     }
 
     private Paint currentPaint(){
