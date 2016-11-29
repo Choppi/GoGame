@@ -253,8 +253,31 @@ public class CustomView extends View {
         return false;
     }
 
-    public Boolean AmIAnEye(Circle c){
-        //return true if a not colored circle as no empty neighbors and all of his neighbors are
+    public void removeBlockchain(Circle c){
+        //on va chercher tous les voisins du jetons. Pour chaque voisins ennemis, on va vérifier si
+        //il appartient à une blockchain
+
+        for(Circle n : myNeigbhors(c)){
+
+            if(n.getRadius()!=0 && n.getPaint()!=c.getPaint())
+            {
+                //cover all blockchain in the blockchain map
+                //search the blockchain that contains circle c
+                for(Blockchain b : blockchain){
+
+                    if(b.contains(n)&&!searchFreeNeighbors(b.getCircleList())){
+                        for(Circle m:b.getCircleList()){
+                            m.setRadius(0);
+                            m.setColor(gray);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean AmIAnEye(Circle c){
+        //return true if a not colored circle has no empty neighbors and all of his neighbors are
         // colored in the same color
         //add the element in the eyeList
         int numberOfWhite=0;
@@ -296,7 +319,9 @@ public class CustomView extends View {
         for(int j = 0; j<board.length;j++)
             for(int k = 0; k<board[j].length;k++) {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
-                        && board[j][k].getRadius()==0){
+                        && board[j][k].getRadius()==0
+                        &&!AmIAnEye(board[j][k])){
+                    //mise a jour blockchain
                     //check regle ko
                     //check des yeux
                     //changement du circle
@@ -305,6 +330,7 @@ public class CustomView extends View {
                     //suppression des unités
 
                     removeSimpleCircle(board[j][k]);
+                    removeBlockchain(board[j][k]);
                     addToBlockCHain(board[j][k]);
                     //suppression des groupes
                     //sauvegarde de la matrice actuelle dans une list
@@ -354,10 +380,8 @@ public class CustomView extends View {
         //return paint of the current player
         if(turn%2==0){
             return circleWhite;
-
         }
         return circleBlack;
-
     }
 
     private void removeSimpleCircle(Circle c) {
