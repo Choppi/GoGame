@@ -4,6 +4,7 @@ package com.example.alexis.gogame;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -300,8 +301,6 @@ public class CustomView extends View {
                 return true;
             else {
                 for (Blockchain element : eye.getSurrounders()) {
-                    System.out.println("Position : "+getCoordMatrix(element.getCircleList().get(0)).first + " , "+getCoordMatrix(element.getCircleList().get(0)).second);
-                    System.out.println("Liberties : "+blockchainLiberties(element));
                     if(blockchainLiberties(element) == 1)
                         return false;
                 }
@@ -384,7 +383,9 @@ public class CustomView extends View {
             for(int k = 0; k<board[j].length;k++) {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
                         && board[j][k].getRadius()==0
-                        &&!AmIAnEye(board[j][k])){
+                        &&!AmIAnEye(board[j][k])
+                        &&!koRule(j,k)
+                        ){
 
                     //check regle ko
 
@@ -464,6 +465,50 @@ public class CustomView extends View {
         }
 
         return all_liberties.size();
+    }
+
+    public boolean koRule(int j, int k){
+        //return true if ko rule occures
+        Circle[][] tmp = new Circle[10][10];
+        for(int n = 0; n<board.length;n++)
+            for(int m = 0; m<board.length;m++) {
+                System.out.println(n+"   "+m);
+                tmp[n][m] = new Circle(board[n][m]);
+                tmp[n][m].setColor(board[n][m].getPaint());
+                tmp[n][m].setRadius(board[n][m].getRadius());
+            }
+        //set the circle
+        tmp[j][k].setRadius(tranche/2);
+        tmp[j][k].setColor(currentPaint());
+
+        removeBlockchain(tmp[j][k]);
+        /*addToBlockCHain(tmp[j][k]);
+        //eyesUpdate(tmp[j][k]);
+
+        for(Circle[][] c : matrix) {
+            if (c.equals(tmp)) {
+                System.out.println("MMMMMMMMMERDE");
+                return true;
+            }
+        }
+        return false;*/
+        for(Circle[][] c : matrix)
+            if(testMAtrixEquality(c,tmp))
+                return true;
+
+        return false;
+    }
+
+    public boolean testMAtrixEquality(Circle[][] a, Circle[][] b){
+        //return true if the two matrix are equal
+        for(int n=0;n<a.length;n++)
+            for(int m=0;m<a[n].length;m++)
+                if(!a[n][m].getPaint().equals(b[n][m].getPaint())
+                    ||a[n][m].getRadius() != b[n][m].getRadius()) {
+                    System.out.println(n + "   " + m);
+                    return false;
+                }
+        return true;
     }
 }
 

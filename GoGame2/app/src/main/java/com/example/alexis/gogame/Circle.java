@@ -16,6 +16,14 @@ public class Circle {
         this.radius = 0;
         this.liberties = 0;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    }
+
+    public Circle(Circle c)
+    {
+        this.posX = c.posX;
+        this.posY = c.posY;
+        this.radius = c.radius;
+        this.liberties = c.liberties;
 
     }
 
