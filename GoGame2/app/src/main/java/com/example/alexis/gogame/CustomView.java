@@ -329,7 +329,7 @@ public class CustomView extends View {
                     board[j][k].setColor(currentPaint());
                     //suppression des unités
 
-                    removeSimpleCircle(board[j][k]);
+                    //removeSimpleCircle(board[j][k]);
 
                     addToBlockCHain(board[j][k]);
                     removeBlockchain(board[j][k]);
