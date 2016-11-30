@@ -3,6 +3,7 @@ package com.example.alexis.gogame;
 import android.util.Pair;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Blockchain {
     //private int libertyNumber;
@@ -35,14 +36,14 @@ public class Blockchain {
         this.circleList = circleList;
     }
 
-    public ArrayList<Circle> getEyeList() {
-        return eyeList;
-    }
+   // public ArrayList<Circle> getEyeList() {
+     //   return eyeList;
+    //}
 
-    public void setEyeList(ArrayList<Circle> eyeList) {
+    /*public void setEyeList(ArrayList<Circle> eyeList) {
         this.eyeList = eyeList;
     }
-
+*/
 /*
     public ArrayList<Circle> getNeighborsCircles() {
         return freeNeighborsCircles;
