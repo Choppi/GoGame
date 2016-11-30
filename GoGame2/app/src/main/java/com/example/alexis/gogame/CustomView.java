@@ -25,10 +25,8 @@ public class CustomView extends View {
     private Circle[][] board;
     private List<Eye> eyes;
 
-    //private int step;
     private int tranche;
 
-    //private boolean touch;
     private float touchx;
     private float touchy;
 
@@ -140,10 +138,7 @@ public class CustomView extends View {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-
-
         // determine what kind of touch event we have
-
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN){
 
             //touch = true;
@@ -233,7 +228,7 @@ public class CustomView extends View {
 
     public boolean searchFreeNeighbors(ArrayList<Circle> circleList){
         //return true if the chain has at least one free neighbors
-        for(Circle c:circleList){
+        for(Circle c : circleList){
             for (Circle n:myNeigbhors(c)){
                 if(n.getRadius()==0){
                     return true;
@@ -254,7 +249,6 @@ public class CustomView extends View {
                 //cover all blockchain in the blockchain map
                 //search the blockchain that contains circle c
                 for(Blockchain b : blockchain){
-
                     if(b.contains(n)&&!searchFreeNeighbors(b.getCircleList())){
                         for(Circle m:b.getCircleList()){
                             m.setRadius(0);
@@ -265,9 +259,7 @@ public class CustomView extends View {
                 }
             }
         }
-        for(Blockchain element : to_remove){
-            blockchain.remove(element);
-        }
+        blockchain.removeAll(to_remove);
     }
 
 
@@ -300,8 +292,6 @@ public class CustomView extends View {
                 return true;
             else {
                 for (Blockchain element : eye.getSurrounders()) {
-                    System.out.println("Position : "+getCoordMatrix(element.getCircleList().get(0)).first + " , "+getCoordMatrix(element.getCircleList().get(0)).second);
-                    System.out.println("Liberties : "+blockchainLiberties(element));
                     if(blockchainLiberties(element) == 1)
                         return false;
                 }
@@ -334,7 +324,6 @@ public class CustomView extends View {
                                 if(map.containsKey(circle))
                                 {
                                     List<Blockchain> value = map.get(circle);
-                                    System.out.println("Size : "+value.size());
                                     value.add(element);
                                 }
                                 // if not we create it
@@ -357,6 +346,7 @@ public class CustomView extends View {
                 }
             }
         }
+
 
         for(Map.Entry<Circle,List<Blockchain>> element : map.entrySet())
         {
@@ -436,11 +426,10 @@ public class CustomView extends View {
             ArrayList<Circle> newlist = new ArrayList<>();
             newlist.add(circle);
             blockchain.add(new Blockchain(newlist));
-
         }
 
-        for(Blockchain to_remove : blockchains_to_remove)
-            blockchain.remove(to_remove);
+        blockchain.remove(blockchains_to_remove);
+
 
     }
 
