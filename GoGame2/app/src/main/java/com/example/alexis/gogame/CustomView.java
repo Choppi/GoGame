@@ -1,32 +1,34 @@
 package com.example.alexis.gogame;
 
 // imports
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Pair;
-import android.view.MotionEvent;
-import android.view.View;
+        import android.content.Context;
+        import android.graphics.Canvas;
+        import android.graphics.Color;
+        import android.graphics.Paint;
+        import android.util.AttributeSet;
+        import android.util.DisplayMetrics;
+        import android.util.Pair;
+        import android.view.MotionEvent;
+        import android.view.View;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+        import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.List;
+        import java.util.Map;
 
 //class definition
 public class CustomView extends View {
 
-    private Paint black,circleBlack,circleWhite;
+    private Paint black,gray,circleBlack,circleWhite;
     private List<Blockchain> blockchain;
     private List<Circle[][]> matrix;
     private Circle[][] board;
     private List<Eye> eyes;
 
+    //private int step;
     private int tranche;
 
+    //private boolean touch;
     private float touchx;
     private float touchy;
 
@@ -55,7 +57,6 @@ public class CustomView extends View {
     private int singleMeasure(int spec, int screenDim) {
         /*
           Mesure sur un axe
-
          */
         int mode = MeasureSpec.getMode(spec);
         int size = MeasureSpec.getSize(spec);
@@ -90,14 +91,19 @@ public class CustomView extends View {
         board = new Circle[10][10];
         eyes = new ArrayList<>();
 
+
+        gray = new Paint(Paint.ANTI_ALIAS_FLAG);
+        gray.setColor(Color.TRANSPARENT);
+
         for(int i = 0;i<board.length;i++)
             for(int j = 0;j<board[i].length;j++)
-                board[i][j] = new Circle(0,0);
+                board[i][j] = new Circle(0,0,gray);
 
 
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         black.setColor(Color.BLACK);
         black.setStyle(Paint.Style.STROKE);
+
 
         circleBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
         circleBlack.setColor(Color.BLACK);
@@ -130,15 +136,18 @@ public class CustomView extends View {
 
         for(int j = 0; j<board.length;j++)
             for(int k = 0; k<board[j].length;k++) {
-            board[j][k].setPosX((1+k)*tranche);
-            board[j][k].setPosY((1+j)*tranche);
-            canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),board[j][k].getPaint());
+                board[j][k].setPosX((1+k)*tranche);
+                board[j][k].setPosY((1+j)*tranche);
+                canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),board[j][k].getPaint());
             }
 
     }
 
     public boolean onTouchEvent(MotionEvent event) {
+
+
         // determine what kind of touch event we have
+
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN){
 
             //touch = true;
@@ -219,9 +228,9 @@ public class CustomView extends View {
         {
             for(int j = 0;j<board[i].length;j++)
             {
-                 if(board[i][j].equals(circle))
+                if(board[i][j].equals(circle))
                     return new Pair<>(i, j);
-                 }
+            }
         }
         return null;
     }
@@ -229,7 +238,7 @@ public class CustomView extends View {
     public boolean searchFreeNeighbors(ArrayList<Circle> circleList){
         //return true if the chain has at least one free neighbors
         for(Circle c : circleList){
-            for (Circle n:myNeigbhors(c)){
+            for (Circle n : myNeigbhors(c)){
                 if(n.getRadius()==0){
                     return true;
                 }
@@ -238,35 +247,50 @@ public class CustomView extends View {
         return false;
     }
 
-    public void removeBlockchain(Circle c){
+    public void removeBlockchain(List<Blockchain> b){
+
+
+        for (Blockchain element : blockchain)
+        {
+            if(b.contains(element)) {
+                for (Circle m : element.getCircleList()) {
+                    m.setRadius(0);
+                    m.setColor(gray);
+                }
+            }
+        }
+
+        blockchain.removeAll(b);
+    }
+
+    public List<Blockchain> findtoremove(Circle c)
+    {
         //on va chercher tous les voisins du jetons. Pour chaque voisins ennemis, on va vérifier si
         //il appartient à une blockchain
         ArrayList<Blockchain> to_remove = new ArrayList<>();
         for(Circle n : myNeigbhors(c)){
-
-            if(n.getRadius()!=0 && n.getPaint()!=c.getPaint())
+            if(n.getRadius()!=0 && !n.getPaint().equals(c.getPaint()))
             {
+
                 //cover all blockchain in the blockchain map
                 //search the blockchain that contains circle c
                 for(Blockchain b : blockchain){
+
                     if(b.contains(n)&&!searchFreeNeighbors(b.getCircleList())){
-                        for(Circle m:b.getCircleList()){
-                            m.setRadius(0);
-                            m.setColor(new Paint(Paint.ANTI_ALIAS_FLAG));
-                        }
                         to_remove.add(b);
                     }
                 }
             }
         }
-        blockchain.removeAll(to_remove);
+
+        return to_remove;
     }
 
 
     public boolean AmIAnEye(Circle c) {
 
         boolean eyefound = false;
-        Eye eye = new Eye(new Circle(0,0),new ArrayList<Blockchain>());
+        Eye eye = new Eye(new Circle(0,0,gray),new ArrayList<Blockchain>());
         List<Eye> list = new ArrayList<>();
         for (Eye item : eyes) {
             list.add(item);
@@ -281,11 +305,11 @@ public class CustomView extends View {
             for(Eye element : list)
             {
                 for(Blockchain block : element.getSurrounders())
-                    {
-                        if(eye.getSurrounders().contains(block)) {
-                            tot_eye++;
-                        }
+                {
+                    if(eye.getSurrounders().contains(block)) {
+                        tot_eye++;
                     }
+                }
             }
             tot_eye -= eye.getSurrounders().size();
             if (tot_eye > 1)
@@ -347,7 +371,6 @@ public class CustomView extends View {
             }
         }
 
-
         for(Map.Entry<Circle,List<Blockchain>> element : map.entrySet())
         {
             eyes.add(new Eye(element.getKey(),element.getValue()));
@@ -374,7 +397,8 @@ public class CustomView extends View {
             for(int k = 0; k<board[j].length;k++) {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
                         && board[j][k].getRadius()==0
-                        &&!AmIAnEye(board[j][k])){
+                        &&!AmIAnEye(board[j][k])
+                        && !koRule(j, k)){
 
                     //check regle ko
 
@@ -383,17 +407,52 @@ public class CustomView extends View {
                     board[j][k].setColor(currentPaint());
                     //suppression des unités
                     //suppression des groupes
-                    removeBlockchain(board[j][k]);
+
+                    removeBlockchain(findtoremove(board[j][k]));
+                    //removeBlockchain(board[j][k]);
                     //mise a jour blockchain
                     addToBlockCHain(board[j][k]);
                     //sauvegarde de la matrice actuelle dans une list
-                    matrix.add(board);
+                    matrix.add(copy_matrix(board));
                     //fin du tour
                     turn = (turn + 1)%2;
                     //check des yeux
                     eyesUpdate(board[j][k]);
                 }
             }
+    }
+
+    private boolean koRule(int j, int k) {
+
+        board[j][k].setRadius(tranche/2);
+        board[j][k].setColor(currentPaint());
+        Circle [][] tmp = copy_matrix(board);
+        //suppression des unités
+        //suppression des groupes
+        List<Blockchain> values = findtoremove(board[j][k]);
+
+        for(Blockchain element : values)
+        {
+            for(Circle c : element.getCircleList())
+            {
+                Pair<Integer,Integer> coord = getCoordMatrix(c);
+                tmp[coord.first][coord.second].setRadius(0);
+                tmp[coord.first][coord.second].setColor(gray);
+            }
+        }
+
+        board[j][k].setRadius(0);
+        board[j][k].setColor(gray);
+
+
+        for(Circle[][] arrays : matrix)
+        {
+            if(matrix_equals(arrays,tmp)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void addToBlockCHain(Circle circle) {
@@ -426,10 +485,11 @@ public class CustomView extends View {
             ArrayList<Circle> newlist = new ArrayList<>();
             newlist.add(circle);
             blockchain.add(new Blockchain(newlist));
+
         }
 
-        blockchain.remove(blockchains_to_remove);
-
+        for(Blockchain to_remove : blockchains_to_remove)
+            blockchain.remove(to_remove);
 
     }
 
@@ -454,5 +514,43 @@ public class CustomView extends View {
 
         return all_liberties.size();
     }
+
+    public Circle[][] copy_matrix(Circle[][] matrix)
+    {
+        Circle[][] new_matrix = new Circle[matrix.length][matrix.length];
+        for(int i = 0;i<matrix.length;i++)
+        {
+            for(int j = 0; j< matrix[i].length;j++)
+            {
+                new_matrix[i][j] = new Circle(matrix[i][j]);
+
+            }
+        }
+
+        return new_matrix;
+    }
+
+    public boolean matrix_equals(Circle[][] a, Circle[][] b)
+    {
+        if(a.length != b.length)
+            return false;
+        else
+        {
+            for(int i = 0; i < a.length;i++)
+            {
+                for(int j = 0; j< a[i].length;j++)
+                {
+                    if(!a[i][j].equals(b[i][j]))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+
+
+    }
 }
+
 
