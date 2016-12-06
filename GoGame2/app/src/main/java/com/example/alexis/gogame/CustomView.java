@@ -24,6 +24,8 @@ public class CustomView extends View {
     private List<Circle[][]> matrix;
     private Circle[][] board;
     private List<Eye> eyes;
+    private int whiteDead;
+    private int blackDead;
 
     //private int step;
     private int tranche;
@@ -256,6 +258,11 @@ public class CustomView extends View {
                 for (Circle m : element.getCircleList()) {
                     m.setRadius(0);
                     m.setColor(gray);
+                    if (currentPaint() == circleWhite)
+                        blackDead ++;
+                    else
+                        whiteDead ++;
+
                 }
             }
         }
@@ -296,7 +303,7 @@ public class CustomView extends View {
             list.add(item);
             if (item.getEye().equals(c) && !currentPaint().equals(item.getSurrounders().get(0).getCircleList().get(0).getPaint())) {
                 eyefound = true;
-                eye = new Eye(item);;
+                eye = new Eye(item);
             }
         }
 
