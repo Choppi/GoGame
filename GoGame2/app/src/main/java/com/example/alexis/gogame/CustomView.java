@@ -532,6 +532,7 @@ public class CustomView extends View {
 
     public boolean matrix_equals(Circle[][] a, Circle[][] b)
     {
+        //test matrix
         if(a.length != b.length)
             return false;
         else
