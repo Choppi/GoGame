@@ -12,7 +12,7 @@ public class Eye {
 
     public Eye(Circle eye, List<Blockchain> surrounders)
     {
-        this.eye = eye;
+        this.eye = new Circle(eye);
         this.surrounders = surrounders;
     }
 

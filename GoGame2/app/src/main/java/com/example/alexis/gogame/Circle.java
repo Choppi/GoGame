@@ -1,6 +1,7 @@
 package com.example.alexis.gogame;
 
 
+import android.graphics.Color;
 import android.graphics.Paint;
 
 public class Circle {
@@ -10,21 +11,22 @@ public class Circle {
     private int liberties;
     private Paint paint;
 
-    public Circle(int posX, int posY) {
+    public Circle(int posX, int posY,Paint paint) {
         this.posX = posX;
         this.posY = posY;
         this.radius = 0;
         this.liberties = 0;
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    }
+        this.paint = paint;
 
+
+    }
     public Circle(Circle c)
     {
-        this.posX = c.posX;
-        this.posY = c.posY;
-        this.radius = c.radius;
-        this.liberties = c.liberties;
-
+        this.posX = c.getPosX();
+        this.posY = c.getPosY();
+        this.radius = c.getRadius();
+        this.liberties = c.getLiberties();
+        this.paint = c.getPaint();
     }
 
     public int getPosX() {
@@ -65,5 +67,19 @@ public class Circle {
 
     public void setColor(Paint paint) {
         this.paint = paint;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Circle circle = (Circle) o;
+
+        if (getPosX() != circle.getPosX()) return false;
+        if (getPosY() != circle.getPosY()) return false;
+        if (getRadius() != circle.getRadius()) return false;
+        return getPaint().equals(circle.getPaint());
+
     }
 }
