@@ -346,7 +346,7 @@ public class CustomView extends View {
                 // loop over the empty slot neighbours
                 for(Circle neighbour : myNeigbhors(circle)) {
                     // if they are same color as the selected point
-                    if(neighbour.getPaint().equals(c.getPaint())) {
+                    if(c.getPaint().equals(neighbour.getPaint())) {
                         // loop over the blockchain to find the blockchains
                         for (Blockchain element : blockchain) {
                             // we found a blockchain that contains an element around our empty slot
@@ -558,6 +558,70 @@ public class CustomView extends View {
         return true;
 
 
+    }
+
+    private void countTerritories(){
+
+        List<Circle> waitingTestedCircle = new ArrayList<Circle>();
+        List<Circle> blackTestedCircle = new ArrayList<Circle>();
+        List<Circle> whiteTestedCircle = new ArrayList<Circle>();
+        List<Circle> notBelongToTerritoriesCircle = new ArrayList<Circle>();
+
+        for(int j = 0; j<board.length;j++)
+            for(int k = 0; k<board[j].length;k++) {
+
+                if(board[j][k].getPaint()==gray){
+                    int numberOfWhiteNeighbors = 0;
+                    int numberOfBlackNeighbors = 0;
+
+                    for(Circle c : myNeigbhors(board[j][k])){
+                        if(c.getPaint()==circleWhite)
+                            numberOfWhiteNeighbors++;
+                        else if(c.getPaint()==circleBlack)
+                            numberOfBlackNeighbors++;
+                    }
+                    if (numberOfBlackNeighbors > 0 && numberOfWhiteNeighbors > 0)
+                        notBelongToTerritoriesCircle.add(board[j][k]);
+                    else if (numberOfBlackNeighbors > 0 && numberOfWhiteNeighbors == 0)
+                        blackTestedCircle.add(board[j][k]);
+                    else if (numberOfBlackNeighbors == 0 && numberOfWhiteNeighbors > 0)
+                        whiteTestedCircle.add(board[j][k]);
+                    else
+                        waitingTestedCircle.add(board[j][k]);
+                }
+            }
+        boolean notChangmentOccured = false;
+        List<Circle> addToNotBelongToTerritoriesCircle = new ArrayList<Circle>();
+        while(!notChangmentOccured){
+            notChangmentOccured = true;
+
+            for(Circle c : notBelongToTerritoriesCircle){
+                for(Circle n : myNeigbhors(c)){
+                    for (Circle b : whiteTestedCircle){
+                        if(n.equals(b)){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            whiteTestedCircle.remove(b);
+                        }
+                    }
+                    for (Circle b : blackTestedCircle){
+                        if(n.equals(b)){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            blackTestedCircle.remove(b);
+                        }
+                    }
+                    for (Circle b : waitingTestedCircle){
+                        if(n.equals(b)){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            waitingTestedCircle.remove(b);
+                        }
+                    }
+                    for(Circle element : addToNotBelongToTerritoriesCircle){
+                        notBelongToTerritoriesCircle.add(element);
+                        addToNotBelongToTerritoriesCircle.remove(element);
+                    }
+                }
+            }
+        }
     }
 }
 
