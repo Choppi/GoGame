@@ -26,6 +26,8 @@ public class CustomView extends View {
     private List<Eye> eyes;
     private int whiteDead;
     private int blackDead;
+    private int numberOfBlackTerritories;
+    private int numberOfWhiteTerritories;
 
     //private int step;
     private int tranche;
@@ -421,6 +423,8 @@ public class CustomView extends View {
                     addToBlockCHain(board[j][k]);
                     //sauvegarde de la matrice actuelle dans une list
                     matrix.add(copy_matrix(board));
+                    //count territories
+                    countTerritories();
                     //fin du tour
                     turn = (turn + 1)%2;
                     //check des yeux
@@ -592,36 +596,131 @@ public class CustomView extends View {
             }
         boolean notChangmentOccured = false;
         List<Circle> addToNotBelongToTerritoriesCircle = new ArrayList<Circle>();
+        List<Circle> addToWhiteTestedCircle = new ArrayList<Circle>();
+        List<Circle> addToBlackTestedCircle = new ArrayList<Circle>();
+        List<Circle> removeToBlackTestedCircle = new ArrayList<Circle>();
+        List<Circle> removeToWhiteTestedCircle = new ArrayList<Circle>();
+        List<Circle> removeTowaitingTestedCircle = new ArrayList<Circle>();
+
         while(!notChangmentOccured){
             notChangmentOccured = true;
 
             for(Circle c : notBelongToTerritoriesCircle){
                 for(Circle n : myNeigbhors(c)){
                     for (Circle b : whiteTestedCircle){
-                        if(n.equals(b)){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
                             addToNotBelongToTerritoriesCircle.add(b);
-                            whiteTestedCircle.remove(b);
+                            removeToWhiteTestedCircle.add(b);
+                            notChangmentOccured = false;
                         }
                     }
                     for (Circle b : blackTestedCircle){
-                        if(n.equals(b)){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
                             addToNotBelongToTerritoriesCircle.add(b);
-                            blackTestedCircle.remove(b);
+                            //blackTestedCircle.remove(b);
+                            removeToBlackTestedCircle.add(b);
+                            notChangmentOccured = false;
                         }
                     }
                     for (Circle b : waitingTestedCircle){
-                        if(n.equals(b)){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
                             addToNotBelongToTerritoriesCircle.add(b);
-                            waitingTestedCircle.remove(b);
+                            //waitingTestedCircle.remove(b);
+                            removeTowaitingTestedCircle.add(b);
+                            notChangmentOccured = false;
                         }
-                    }
-                    for(Circle element : addToNotBelongToTerritoriesCircle){
-                        notBelongToTerritoriesCircle.add(element);
-                        addToNotBelongToTerritoriesCircle.remove(element);
                     }
                 }
             }
+            blackTestedCircle.removeAll(removeToBlackTestedCircle);
+            removeToBlackTestedCircle.clear();
+            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
+            removeToWhiteTestedCircle.clear();
+            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
+            removeTowaitingTestedCircle.clear();
+
+            for ( Circle c : whiteTestedCircle){
+                for(Circle n : myNeigbhors(c)){
+                    for(Circle b : waitingTestedCircle){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
+                            addToWhiteTestedCircle.add(b);
+                            //waitingTestedCircle.remove(b);
+                            removeTowaitingTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                    for(Circle b : blackTestedCircle){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            addToNotBelongToTerritoriesCircle.add(c);
+                            //whiteTestedCircle.remove(c);
+                            //blackTestedCircle.remove(b);
+                            removeToBlackTestedCircle.add(b);
+                            removeToWhiteTestedCircle.add(c);
+                            notChangmentOccured = false;
+                        }
+                    }
+                }
+            }
+
+            blackTestedCircle.removeAll(removeToBlackTestedCircle);
+            removeToBlackTestedCircle.clear();
+            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
+            removeToWhiteTestedCircle.clear();
+            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
+            removeTowaitingTestedCircle.clear();
+
+            for ( Circle c : blackTestedCircle) {
+                for (Circle n : myNeigbhors(c)) {
+                    for (Circle b : waitingTestedCircle) {
+                        if (this.getCoordMatrix(n).equals(this.getCoordMatrix(b))) {
+                            addToBlackTestedCircle.add(b);
+                            //waitingTestedCircle.remove(b);
+                            removeTowaitingTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                    for (Circle b : whiteTestedCircle) {
+                        if (this.getCoordMatrix(n).equals(this.getCoordMatrix(b))) {
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            addToNotBelongToTerritoriesCircle.add(c);
+                            //whiteTestedCircle.remove(b);
+                            //blackTestedCircle.remove(c);
+                            removeToBlackTestedCircle.add(c);
+                            removeToWhiteTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                }
+            }
+
+            blackTestedCircle.removeAll(removeToBlackTestedCircle);
+            removeToBlackTestedCircle.clear();
+            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
+            removeToWhiteTestedCircle.clear();
+            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
+            removeTowaitingTestedCircle.clear();
+
+            for(Circle element : addToNotBelongToTerritoriesCircle){
+                notBelongToTerritoriesCircle.add(element);
+            }
+            addToNotBelongToTerritoriesCircle.clear();
+
+            for(Circle element : addToBlackTestedCircle){
+                blackTestedCircle.add(element);
+            }
+            addToBlackTestedCircle.clear();
+
+            for(Circle element : addToWhiteTestedCircle){
+                whiteTestedCircle.add(element);
+            }
+            addToWhiteTestedCircle.clear();
         }
+
+        numberOfWhiteTerritories=whiteTestedCircle.size();
+        numberOfBlackTerritories=blackTestedCircle.size();
+        System.out.println("number of black terri "+numberOfBlackTerritories);
+        System.out.println("number of white terri "+numberOfWhiteTerritories);
     }
 }
 
