@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
          />
 
@@ -30,8 +30,8 @@
 
     <ImageView
         android:id="@+id/iv"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="30sp"
+        android:layout_height="30sp"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/board_id"
         android:background="@android:color/black"/>
@@ -41,25 +41,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/iv"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
     />
 
     <TextView
-        android:id="@+id/black_pieces"
+        android:id="@+id/territories"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/iv"
+        android:layout_below="@+id/black_timer"
+        android:layout_centerHorizontal="true"
         android:text="@string/territories"
-        android:textSize="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/pieces"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/territories"
+        android:layout_centerHorizontal="true"
+        android:text="@string/pieces"
+        android:textSize="20sp"
         android:textStyle="bold"
         />
 
 
     <ImageView
         android:id="@+id/test"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="30sp"
+        android:layout_height="30sp"
         android:layout_alignParentRight="true"
         android:layout_below="@id/board_id"
         android:background="@android:color/white"/>
@@ -70,7 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/test"
         android:layout_alignParentRight="true"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         />
 

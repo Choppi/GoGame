@@ -1,28 +1,26 @@
 package com.example.alexis.gogame;
 
 // imports
-        import android.content.Context;
-        import android.graphics.Canvas;
-        import android.graphics.Color;
-        import android.graphics.Paint;
-        import android.os.CountDownTimer;
-        import android.text.SpannableString;
-        import android.text.SpannableStringBuilder;
-        import android.text.style.ForegroundColorSpan;
-        import android.util.AttributeSet;
-        import android.util.DisplayMetrics;
-        import android.util.Pair;
-        import android.view.MotionEvent;
-        import android.view.View;
-        import android.widget.TextView;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.CountDownTimer;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Pair;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.TextView;
 
-        import org.w3c.dom.Text;
-
-        import java.util.ArrayList;
-        import java.util.HashMap;
-        import java.util.List;
-        import java.util.Map;
-        import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 //class definition
 public class CustomView extends View {
@@ -47,6 +45,12 @@ public class CustomView extends View {
     //private boolean touch;
     private float touchx;
     private float touchy;
+
+
+    private int numberOfBlackTerritories;
+    private int numberOfWhiteTerritories;
+    private int whiteDead;
+    private int blackDead;
 
     private int turn = 1;
     private TextView tv_turn;
@@ -448,6 +452,9 @@ public class CustomView extends View {
                     //sauvegarde de la matrice actuelle dans une list
                     matrix.add(copy_matrix(board));
                     //fin du tour
+
+                    countTerritories();
+
                     turn = (turn + 1)%2;
                     //check des yeux
                     eyesUpdate(board[j][k]);
@@ -664,6 +671,164 @@ public class CustomView extends View {
         this.tv_turn = tv_turn;
     }
 
+    private void countTerritories(){
+
+        List<Circle> waitingTestedCircle = new ArrayList<Circle>();
+        List<Circle> blackTestedCircle = new ArrayList<Circle>();
+        List<Circle> whiteTestedCircle = new ArrayList<Circle>();
+        List<Circle> notBelongToTerritoriesCircle = new ArrayList<Circle>();
+
+        for(int j = 0; j<board.length;j++)
+            for(int k = 0; k<board[j].length;k++) {
+
+                if(board[j][k].getPaint()==gray){
+                    int numberOfWhiteNeighbors = 0;
+                    int numberOfBlackNeighbors = 0;
+
+                    for(Circle c : myNeigbhors(board[j][k])){
+                        if(c.getPaint()==circleWhite)
+                            numberOfWhiteNeighbors++;
+                        else if(c.getPaint()==circleBlack)
+                            numberOfBlackNeighbors++;
+                    }
+                    if (numberOfBlackNeighbors > 0 && numberOfWhiteNeighbors > 0)
+                        notBelongToTerritoriesCircle.add(board[j][k]);
+                    else if (numberOfBlackNeighbors > 0 && numberOfWhiteNeighbors == 0)
+                        blackTestedCircle.add(board[j][k]);
+                    else if (numberOfBlackNeighbors == 0 && numberOfWhiteNeighbors > 0)
+                        whiteTestedCircle.add(board[j][k]);
+                    else
+                        waitingTestedCircle.add(board[j][k]);
+                }
+            }
+        boolean notChangmentOccured = false;
+        List<Circle> addToNotBelongToTerritoriesCircle = new ArrayList<Circle>();
+        List<Circle> addToWhiteTestedCircle = new ArrayList<Circle>();
+        List<Circle> addToBlackTestedCircle = new ArrayList<Circle>();
+        List<Circle> removeToBlackTestedCircle = new ArrayList<Circle>();
+        List<Circle> removeToWhiteTestedCircle = new ArrayList<Circle>();
+        List<Circle> removeTowaitingTestedCircle = new ArrayList<Circle>();
+
+        while(!notChangmentOccured){
+            notChangmentOccured = true;
+
+            for(Circle c : notBelongToTerritoriesCircle){
+                for(Circle n : myNeigbhors(c)){
+                    for (Circle b : whiteTestedCircle){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            removeToWhiteTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                    for (Circle b : blackTestedCircle){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            //blackTestedCircle.remove(b);
+                            removeToBlackTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                    for (Circle b : waitingTestedCircle){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            //waitingTestedCircle.remove(b);
+                            removeTowaitingTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                }
+            }
+            blackTestedCircle.removeAll(removeToBlackTestedCircle);
+            removeToBlackTestedCircle.clear();
+            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
+            removeToWhiteTestedCircle.clear();
+            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
+            removeTowaitingTestedCircle.clear();
+
+            for ( Circle c : whiteTestedCircle){
+                for(Circle n : myNeigbhors(c)){
+                    for(Circle b : waitingTestedCircle){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
+                            addToWhiteTestedCircle.add(b);
+                            //waitingTestedCircle.remove(b);
+                            removeTowaitingTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                    for(Circle b : blackTestedCircle){
+                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            addToNotBelongToTerritoriesCircle.add(c);
+                            //whiteTestedCircle.remove(c);
+                            //blackTestedCircle.remove(b);
+                            removeToBlackTestedCircle.add(b);
+                            removeToWhiteTestedCircle.add(c);
+                            notChangmentOccured = false;
+                        }
+                    }
+                }
+            }
+
+            blackTestedCircle.removeAll(removeToBlackTestedCircle);
+            removeToBlackTestedCircle.clear();
+            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
+            removeToWhiteTestedCircle.clear();
+            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
+            removeTowaitingTestedCircle.clear();
+
+            for ( Circle c : blackTestedCircle) {
+                for (Circle n : myNeigbhors(c)) {
+                    for (Circle b : waitingTestedCircle) {
+                        if (this.getCoordMatrix(n).equals(this.getCoordMatrix(b))) {
+                            addToBlackTestedCircle.add(b);
+                            //waitingTestedCircle.remove(b);
+                            removeTowaitingTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                    for (Circle b : whiteTestedCircle) {
+                        if (this.getCoordMatrix(n).equals(this.getCoordMatrix(b))) {
+                            addToNotBelongToTerritoriesCircle.add(b);
+                            addToNotBelongToTerritoriesCircle.add(c);
+                            //whiteTestedCircle.remove(b);
+                            //blackTestedCircle.remove(c);
+                            removeToBlackTestedCircle.add(c);
+                            removeToWhiteTestedCircle.add(b);
+                            notChangmentOccured = false;
+                        }
+                    }
+                }
+            }
+
+            blackTestedCircle.removeAll(removeToBlackTestedCircle);
+            removeToBlackTestedCircle.clear();
+            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
+            removeToWhiteTestedCircle.clear();
+            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
+            removeTowaitingTestedCircle.clear();
+
+            for(Circle element : addToNotBelongToTerritoriesCircle){
+                notBelongToTerritoriesCircle.add(element);
+            }
+            addToNotBelongToTerritoriesCircle.clear();
+
+            for(Circle element : addToBlackTestedCircle){
+                blackTestedCircle.add(element);
+            }
+            addToBlackTestedCircle.clear();
+
+            for(Circle element : addToWhiteTestedCircle){
+                whiteTestedCircle.add(element);
+            }
+            addToWhiteTestedCircle.clear();
+        }
+
+        numberOfWhiteTerritories=whiteTestedCircle.size();
+        numberOfBlackTerritories=blackTestedCircle.size();
+        System.out.println("number of black terri "+numberOfBlackTerritories);
+        System.out.println("number of white terri "+numberOfWhiteTerritories);
+    }
 
 
 }

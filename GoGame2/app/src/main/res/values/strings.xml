@@ -3,5 +3,6 @@
     <string name="white">White</string>
     <string name="black">Black</string>
     <string name="insert"> , insert a stone</string>
-    <string name="territories">Territories </string>
+    <string name="territories">Territories</string>
+    <string name="pieces">Remaining pieces</string>
 </resources>
