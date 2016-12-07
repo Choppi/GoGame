@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">GoGame</string>
+    <string name="white">White</string>
+    <string name="black">Black</string>
+    <string name="insert"> , insert a stone</string>
+    <string name="territories">Territories </string>
 </resources>

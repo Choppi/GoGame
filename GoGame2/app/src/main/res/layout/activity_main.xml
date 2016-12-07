@@ -9,15 +9,70 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.alexis.gogame.MainActivity"
+    android:background="#F4A460"
     >
 
     <TextView
+        android:id="@+id/tv_turn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        android:textStyle="bold"
+         />
 
     <com.example.alexis.gogame.CustomView
+        android:id="@+id/board_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
+
+
+    <ImageView
+        android:id="@+id/iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/board_id"
+        android:background="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/black_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv"
+        android:textSize="20dp"
+        android:textStyle="bold"
+    />
+
+    <TextView
+        android:id="@+id/black_pieces"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv"
+        android:text="@string/territories"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        />
+
+
+    <ImageView
+        android:id="@+id/test"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/board_id"
+        android:background="@android:color/white"/>
+
+    <TextView
+        android:id="@+id/white_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/test"
+        android:layout_alignParentRight="true"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        />
+
 </RelativeLayout>
+

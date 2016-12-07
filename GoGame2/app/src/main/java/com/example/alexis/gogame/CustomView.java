@@ -5,34 +5,51 @@ package com.example.alexis.gogame;
         import android.graphics.Canvas;
         import android.graphics.Color;
         import android.graphics.Paint;
+        import android.os.CountDownTimer;
+        import android.text.SpannableString;
+        import android.text.SpannableStringBuilder;
+        import android.text.style.ForegroundColorSpan;
         import android.util.AttributeSet;
         import android.util.DisplayMetrics;
         import android.util.Pair;
         import android.view.MotionEvent;
         import android.view.View;
+        import android.widget.TextView;
+
+        import org.w3c.dom.Text;
 
         import java.util.ArrayList;
         import java.util.HashMap;
         import java.util.List;
         import java.util.Map;
+        import java.util.concurrent.TimeUnit;
 
 //class definition
 public class CustomView extends View {
 
+    private TextView white_timer;
+    private TextView black_timer;
     private Paint black,gray,circleBlack,circleWhite;
     private List<Blockchain> blockchain;
     private List<Circle[][]> matrix;
     private Circle[][] board;
     private List<Eye> eyes;
 
+    private long remainingTime_white = 900000;
+    private long remainingTime_black = 900000;
+
     //private int step;
     private int tranche;
+
+    public CountDownTimer white_countdown_timer;
+    public CountDownTimer black_countdown_timer;
 
     //private boolean touch;
     private float touchx;
     private float touchy;
 
     private int turn = 1;
+    private TextView tv_turn;
 
     //default constructor
     public CustomView(Context c) {
@@ -109,6 +126,22 @@ public class CustomView extends View {
         circleBlack.setColor(Color.BLACK);
         circleWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
         circleWhite.setColor(Color.WHITE);
+
+        black_countdown_timer= new CountDownTimer(remainingTime_black, 1000) {
+            public void onTick(long millisUntilFinished) {
+                //update total with the remaining time left
+                String hms = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)));
+                remainingTime_black = millisUntilFinished;
+                black_timer.setText(hms);
+
+            }
+            public void onFinish() {
+                black_timer.setText("Time is up");
+
+            }
+        }.start();
 
 
     }
@@ -418,8 +451,81 @@ public class CustomView extends View {
                     turn = (turn + 1)%2;
                     //check des yeux
                     eyesUpdate(board[j][k]);
+
+                    UpdateTimer();
+                    setTurn();
                 }
             }
+    }
+
+    public void setTurn() {
+
+
+        String white_string = getResources().getString(R.string.white);
+        String black_string = getResources().getString(R.string.black);
+
+        SpannableString whiteSpannable = new SpannableString(white_string);
+        SpannableString blackSpannable = new SpannableString(black_string);
+
+        whiteSpannable.setSpan(new ForegroundColorSpan(Color.WHITE), 0, white_string.length(), 0);
+        blackSpannable.setSpan(new ForegroundColorSpan(Color.BLACK), 0, black_string.length(), 0);
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        if(currentPaint().equals(circleBlack))
+        {
+            builder.append(blackSpannable);
+            builder.append(getResources().getString(R.string.insert));
+            tv_turn.setText(builder,TextView.BufferType.SPANNABLE);
+
+        }
+        else
+        {
+            builder.append(whiteSpannable);
+            builder.append(getResources().getString(R.string.insert));
+            tv_turn.setText(builder,TextView.BufferType.SPANNABLE);
+
+        }
+    }
+
+    public void UpdateTimer() {
+        if (currentPaint().equals(circleBlack))
+        {
+            white_countdown_timer.cancel();
+            black_countdown_timer = new CountDownTimer(remainingTime_black, 1000) {
+            public void onTick(long millisUntilFinished) {
+                //update total with the remaining time left
+                String hms = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)));
+                remainingTime_black = millisUntilFinished;
+                black_timer.setText(hms);
+
+            }
+
+            public void onFinish() {
+                black_timer.setText("Time is up");
+
+            }
+        }.start();
+    }
+        else {
+            black_countdown_timer.cancel();
+            white_countdown_timer= new CountDownTimer(remainingTime_white, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    //update total with the remaining time left
+                    String hms = String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)));
+                        remainingTime_white = millisUntilFinished;
+                        white_timer.setText(hms);
+
+                }
+                public void onFinish() {
+                    white_timer.setText("Time is up");
+
+                }
+            }.start();
+        }
+
     }
 
     private boolean koRule(int j, int k) {
@@ -549,9 +655,17 @@ public class CustomView extends View {
             }
         }
         return true;
-
-
     }
+
+    public void textview_setter(TextView white_timer, TextView black_timer, TextView tv_turn)
+    {
+        this.white_timer = white_timer;
+        this.black_timer = black_timer;
+        this.tv_turn = tv_turn;
+    }
+
+
+
 }
 
 
