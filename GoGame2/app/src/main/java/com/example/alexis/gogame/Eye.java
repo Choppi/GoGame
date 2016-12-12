@@ -8,11 +8,11 @@ import java.util.List;
 
 public class Eye {
     private Circle eye;
-    private List<Blockchain> surrounders;
+    private Blockchain surrounders;
 
-    public Eye(Circle eye, List<Blockchain> surrounders)
+    public Eye(Circle eye, Blockchain surrounders)
     {
-        this.eye = new Circle(eye);
+        this.eye = eye;
         this.surrounders = surrounders;
     }
 
@@ -30,15 +30,7 @@ public class Eye {
         this.eye = eye;
     }
 
-    public List<Blockchain> getSurrounders() {
+    public Blockchain getSurrounders() {
         return surrounders;
     }
-
-
-
-    public void setSurrounders(List<Blockchain> surrounders) {
-        this.surrounders = surrounders;
-    }
-
-    public int blockchainNumber() { return surrounders.size(); }
 }

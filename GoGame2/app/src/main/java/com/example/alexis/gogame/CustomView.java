@@ -17,9 +17,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 //class definition
@@ -27,7 +27,7 @@ public class CustomView extends View {
 
     private TextView white_timer;
     private TextView black_timer;
-    private Paint black,gray,circleBlack,circleWhite;
+    private Paint black, gray, circleBlack, circleWhite;
     private List<Blockchain> blockchain;
     private List<Circle[][]> matrix;
     private Circle[][] board;
@@ -47,13 +47,20 @@ public class CustomView extends View {
     private float touchy;
 
 
-    private int numberOfBlackTerritories;
-    private int numberOfWhiteTerritories;
-    private int whiteDead;
-    private int blackDead;
+    private int numberOfBlackTerritories = 0;
+    private int numberOfWhiteTerritories = 0;
+    private int whiteDead = 0;
+    private int blackDead = 0;
 
     private int turn = 1;
+
     private TextView tv_turn;
+    private TextView white_pieces;
+    private TextView white_territories;
+    private TextView black_pieces;
+    private TextView black_territories;
+    private TextView black_score;
+    private TextView white_score;
 
     //default constructor
     public CustomView(Context c) {
@@ -82,8 +89,8 @@ public class CustomView extends View {
         int mode = MeasureSpec.getMode(spec);
         int size = MeasureSpec.getSize(spec);
         // Si le layout n'a pas précisé de dimensions, la vue prendra la moitié de l'écran
-        if(mode == MeasureSpec.UNSPECIFIED)
-            return screenDim/2;
+        if (mode == MeasureSpec.UNSPECIFIED)
+            return screenDim / 2;
         else
             // Sinon, elle prendra la taille demandée par le layout
             return size;
@@ -92,7 +99,8 @@ public class CustomView extends View {
 
     @Override
 
-    protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
+    // TODO maxime comments
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // On récupère les dimensions de l'écran
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         // Sa largeur…
@@ -106,6 +114,7 @@ public class CustomView extends View {
         setMeasuredDimension(retour, retour);
     }
 
+    // TODO comment
     public void init() {
         blockchain = new ArrayList<>();
         matrix = new ArrayList<>();
@@ -116,9 +125,9 @@ public class CustomView extends View {
         gray = new Paint(Paint.ANTI_ALIAS_FLAG);
         gray.setColor(Color.TRANSPARENT);
 
-        for(int i = 0;i<board.length;i++)
-            for(int j = 0;j<board[i].length;j++)
-                board[i][j] = new Circle(0,0,gray);
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board[i].length; j++)
+                board[i][j] = new Circle(0, 0, gray);
 
 
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -131,7 +140,7 @@ public class CustomView extends View {
         circleWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
         circleWhite.setColor(Color.WHITE);
 
-        black_countdown_timer= new CountDownTimer(remainingTime_black, 1000) {
+        black_countdown_timer = new CountDownTimer(remainingTime_black, 1000) {
             public void onTick(long millisUntilFinished) {
                 //update total with the remaining time left
                 String hms = String.format("%02d:%02d",
@@ -141,6 +150,7 @@ public class CustomView extends View {
                 black_timer.setText(hms);
 
             }
+
             public void onFinish() {
                 black_timer.setText("Time is up");
 
@@ -150,7 +160,8 @@ public class CustomView extends View {
 
     }
 
-    public void onDraw(final Canvas canvas){
+    // TODO comment
+    public void onDraw(final Canvas canvas) {
         //call the superclass method
         super.onDraw(canvas);
 
@@ -160,123 +171,120 @@ public class CustomView extends View {
         int height = getHeight();
         int step = Math.min(width, height);
 
-        tranche = step/11;
+        tranche = step / 11;
 
-        int i=1;
-        while (i < 11){
+        int i = 1;
+        while (i < 11) {
             //horizontal
-            canvas.drawLine(i*tranche,tranche,i*tranche,10*tranche,black);
+            canvas.drawLine(i * tranche, tranche, i * tranche, 10 * tranche, black);
             //vertical
-            canvas.drawLine(tranche,i*tranche,10*tranche,i*tranche,black);
+            canvas.drawLine(tranche, i * tranche, 10 * tranche, i * tranche, black);
             i++;
         }
 
-        for(int j = 0; j<board.length;j++)
-            for(int k = 0; k<board[j].length;k++) {
-                board[j][k].setPosX((1+k)*tranche);
-                board[j][k].setPosY((1+j)*tranche);
-                canvas.drawCircle(board[j][k].getPosX(),board[j][k].getPosY(),board[j][k].getRadius(),board[j][k].getPaint());
+        for (int j = 0; j < board.length; j++)
+            for (int k = 0; k < board[j].length; k++) {
+                board[j][k].setPosX((1 + k) * tranche);
+                board[j][k].setPosY((1 + j) * tranche);
+                canvas.drawCircle(board[j][k].getPosX(), board[j][k].getPosY(), board[j][k].getRadius(), board[j][k].getPaint());
             }
 
     }
 
+    // TODO Comment
     public boolean onTouchEvent(MotionEvent event) {
-
-
         // determine what kind of touch event we have
 
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN){
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
 
-            //touch = true;
             touchx = event.getX();
             touchy = event.getY();
 
             placement();
-            invalidate();
+
             return true;
-            //}
         }
         return super.onTouchEvent(event);
     }
 
-    public ArrayList<Circle> myNeigbhors(Circle c){
+    // TODO commment
+    public ArrayList<Circle> myNeigbhors(Circle c) {
         ArrayList<Circle> result = new ArrayList<>();
 
-        int x=getCoordMatrix(c).first;
-        int y=getCoordMatrix(c).second;
+        int x = getCoordMatrix(c).first;
+        int y = getCoordMatrix(c).second;
 
-        if(x<9&&x>0&&y<9&&y>0){
-            result.add(board[x-1][y]);
-            result.add(board[x+1][y]);
-            result.add(board[x][y-1]);
-            result.add(board[x][y+1]);
+        if (x < 9 && x > 0 && y < 9 && y > 0) {
+            result.add(board[x - 1][y]);
+            result.add(board[x + 1][y]);
+            result.add(board[x][y - 1]);
+            result.add(board[x][y + 1]);
         }
 
-        if(y==0&&x>0&&x<9){
-            result.add(board[x-1][y]);
-            result.add(board[x+1][y]);
-            result.add(board[x][y+1]);
+        if (y == 0 && x > 0 && x < 9) {
+            result.add(board[x - 1][y]);
+            result.add(board[x + 1][y]);
+            result.add(board[x][y + 1]);
         }
 
-        if(y==9&&x>0&&x<9){
-            result.add(board[x-1][y]);
-            result.add(board[x+1][y]);
-            result.add(board[x][y-1]);
+        if (y == 9 && x > 0 && x < 9) {
+            result.add(board[x - 1][y]);
+            result.add(board[x + 1][y]);
+            result.add(board[x][y - 1]);
         }
 
-        if(x==9&&y>0&&y<9){
-            result.add(board[x][y-1]);
-            result.add(board[x][y+1]);
-            result.add(board[x-1][y]);
+        if (x == 9 && y > 0 && y < 9) {
+            result.add(board[x][y - 1]);
+            result.add(board[x][y + 1]);
+            result.add(board[x - 1][y]);
         }
 
-        if(x==0&&y>0&&y<9){
-            result.add(board[x][y-1]);
-            result.add(board[x][y+1]);
-            result.add(board[x+1][y]);
+        if (x == 0 && y > 0 && y < 9) {
+            result.add(board[x][y - 1]);
+            result.add(board[x][y + 1]);
+            result.add(board[x + 1][y]);
         }
 
-        if(x==0&&y==0){
-            result.add(board[x+1][y]);
-            result.add(board[x][y+1]);
+        if (x == 0 && y == 0) {
+            result.add(board[x + 1][y]);
+            result.add(board[x][y + 1]);
         }
 
-        if(x==9&&y==0){
-            result.add(board[x-1][y]);
-            result.add(board[x][y+1]);
+        if (x == 9 && y == 0) {
+            result.add(board[x - 1][y]);
+            result.add(board[x][y + 1]);
         }
 
-        if(x==0&&y==9){
-            result.add(board[x+1][y]);
-            result.add(board[x][y-1]);
+        if (x == 0 && y == 9) {
+            result.add(board[x + 1][y]);
+            result.add(board[x][y - 1]);
         }
 
-        if(x==9&&y==9){
-            result.add(board[x-1][y]);
-            result.add(board[x][y-1]);
+        if (x == 9 && y == 9) {
+            result.add(board[x - 1][y]);
+            result.add(board[x][y - 1]);
         }
 
         return result;
     }
 
-    public Pair<Integer,Integer> getCoordMatrix(Circle circle){
+    // TODO comment && resolve null
+    public Pair<Integer, Integer> getCoordMatrix(Circle circle) {
 
-        for(int i = 0;i<board.length;i++)
-        {
-            for(int j = 0;j<board[i].length;j++)
-            {
-                if(board[i][j].equals(circle))
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j].equals(circle))
                     return new Pair<>(i, j);
             }
         }
         return null;
     }
 
-    public boolean searchFreeNeighbors(ArrayList<Circle> circleList){
+    public boolean searchFreeNeighbors(ArrayList<Circle> circleList) {
         //return true if the chain has at least one free neighbors
-        for(Circle c : circleList){
-            for (Circle n : myNeigbhors(c)){
-                if(n.getRadius()==0){
+        for (Circle c : circleList) {
+            for (Circle n : myNeigbhors(c)) {
+                if (n.getRadius() == 0) {
                     return true;
                 }
             }
@@ -284,36 +292,68 @@ public class CustomView extends View {
         return false;
     }
 
-    public void removeBlockchain(List<Blockchain> b){
+    // TODO less complexity
+    public void removeBlockchain(List<Blockchain> b) {
 
 
-        for (Blockchain element : blockchain)
+        for(Blockchain element : b)
         {
-            if(b.contains(element)) {
-                for (Circle m : element.getCircleList()) {
-                    m.setRadius(0);
-                    m.setColor(gray);
+            for(Iterator<Eye> ite = eyes.iterator();ite.hasNext();)
+            {
+                Eye eye = ite.next();
+                if(eye.getSurrounders().equals(element))
+                {
+                    ite.remove();
                 }
+            }
+            for (Circle m : element.getCircleList()) {
+                m.setRadius(0);
+                m.setColor(gray);
+                if (currentPaint().equals(circleBlack))
+                    blackDead++;
+                else
+                    whiteDead++;
             }
         }
 
         blockchain.removeAll(b);
+
+        /*
+        for (Iterator<Blockchain> itb = blockchain.iterator();itb.hasNext();) {
+            Blockchain element = itb.next();
+            if (b.contains(element)) {
+                for(Iterator<Eye> ite = eyes.iterator();ite.hasNext();)
+                {
+                    Eye eye = ite.next();
+                    if(eye.getSurrounders().equals(element))
+                    {
+                        ite.remove();
+                    }
+                }
+                for (Circle m : element.getCircleList()) {
+                    m.setRadius(0);
+                    m.setColor(gray);
+                    if (currentPaint().equals(circleBlack))
+                        blackDead++;
+                    else
+                        whiteDead++;
+                }
+                itb.remove();
+            }
+        }*/
     }
 
-    public List<Blockchain> findtoremove(Circle c)
-    {
+    // TODO comment && less complexity
+    public List<Blockchain> findtoremove(Circle c) {
         //on va chercher tous les voisins du jetons. Pour chaque voisins ennemis, on va vérifier si
         //il appartient à une blockchain
         ArrayList<Blockchain> to_remove = new ArrayList<>();
-        for(Circle n : myNeigbhors(c)){
-            if(n.getRadius()!=0 && !n.getPaint().equals(c.getPaint()))
-            {
-
+        for (Circle n : myNeigbhors(c)) {
+            if (n.getRadius() != 0 && !n.getPaint().equals(c.getPaint())) {
                 //cover all blockchain in the blockchain map
                 //search the blockchain that contains circle c
-                for(Blockchain b : blockchain){
-
-                    if(b.contains(n)&&!searchFreeNeighbors(b.getCircleList())){
+                for (Blockchain b : blockchain) {
+                    if (b.contains(n) && !searchFreeNeighbors(b.getCircleList())) {
                         to_remove.add(b);
                     }
                 }
@@ -323,111 +363,88 @@ public class CustomView extends View {
         return to_remove;
     }
 
-
+    // TODO comment
     public boolean AmIAnEye(Circle c) {
 
         boolean eyefound = false;
-        Eye eye = new Eye(new Circle(0,0,gray),new ArrayList<Blockchain>());
+        Eye eye = null;
         List<Eye> list = new ArrayList<>();
         for (Eye item : eyes) {
             list.add(item);
-            if (item.getEye().equals(c) && !currentPaint().equals(item.getSurrounders().get(0).getCircleList().get(0).getPaint())) {
+            if (item.getEye().equals(c) && !currentPaint().equals(item.getSurrounders().getCircleList().get(0).getPaint())) {
                 eyefound = true;
-                eye = new Eye(item);;
+                eye = new Eye(item);
             }
         }
 
         if (eyefound) {
-            int tot_eye = 1;
-            for(Eye element : list)
-            {
-                for(Blockchain block : element.getSurrounders())
-                {
-                    if(eye.getSurrounders().contains(block)) {
-                        tot_eye++;
-                    }
+            int tot_eye = 0;
+            for (Eye element : list) {
+                if(element.getSurrounders().equals(eye.getSurrounders()))
+                    tot_eye++;
                 }
-            }
-            tot_eye -= eye.getSurrounders().size();
             if (tot_eye > 1)
                 return true;
             else {
-                for (Blockchain element : eye.getSurrounders()) {
-                    if(blockchainLiberties(element) == 1)
-                        return false;
+                if(blockchainLiberties(eye.getSurrounders()) == 1) {
+                    return false;
+                    }
                 }
+
             }
-            return true;
-        }
         return false;
-    }
+        }
 
-    private void eyesUpdate(Circle c)
-    {
+    // TODO comment
+    private void eyesUpdate(Circle c) {
 
-        // map to store the the empty slot and the blockchains that surround it
-        Map<Circle,List<Blockchain>> map = new HashMap<>();
-        // loop over the neighbours of the selected point
-        for(Circle circle : myNeigbhors(c))
+        List<Circle> test = new ArrayList<>();
+        Blockchain block_final = null;
+        for(Blockchain b : blockchain)
         {
-            // if the neighbour is an empty slot
-            if(circle.getRadius() == 0)
+            if(b.getCircleList().contains(c))
             {
-                // loop over the empty slot neighbours
-                for(Circle neighbour : myNeigbhors(circle)) {
-                    // if they are same color as the selected point
-                    if(neighbour.getPaint().equals(c.getPaint())) {
-                        // loop over the blockchain to find the blockchains
-                        for (Blockchain element : blockchain) {
-                            // we found a blockchain that contains an element around our empty slot
-                            if (element.getCircleList().contains(neighbour))
-                                // check if the point is not already in the map
-                                if(map.containsKey(circle))
-                                {
-                                    List<Blockchain> value = map.get(circle);
-                                    value.add(element);
-                                }
-                                // if not we create it
-                                else
-                                {
-                                    List<Blockchain> value = new ArrayList<>();
-                                    value.add(element);
-                                    map.put(circle,value);
-                                }
-                        }
-                    }
-                    // if while looping over the neighbour we find an empty slot OR a different paint than the player who played
-                    // we remove the circle from the map as it is not an empty slot surrounded by all same color
-                    // we break to go out of the for loop
-                    else
-                    {
-                        map.remove(circle);
-                        break;
-                    }
+                for(Circle circle : b.getCircleList())
+                {
+                    for(Circle ccc : myNeigbhors(circle))
+                    if(ccc.getRadius() == 0)
+                        test.add(ccc);
                 }
+                block_final  = b;
+                break;
             }
         }
 
-        for(Map.Entry<Circle,List<Blockchain>> element : map.entrySet())
+        List<Circle> list_eye = new ArrayList<>();
+        for(Circle cc : test)
         {
-            eyes.add(new Eye(element.getKey(),element.getValue()));
+            if(Collections.frequency(test,cc) == myNeigbhors(cc).size() && !list_eye.contains(cc))
+                list_eye.add(cc);
         }
 
-        List<Eye> test = new ArrayList<>();
-        for(Eye element : eyes)
-            if(element.getEye().getRadius() != 0)
-                test.add(element);
-        eyes.removeAll(test);
 
+        for(Circle value : list_eye)
+        {
+            eyes.add(new Eye(value,block_final));
+        }
+
+        for (Iterator<Eye> it = eyes.iterator();it.hasNext();) {
+            Eye element = it.next();
+            if (element.getEye().getRadius() != 0) {
+                it.remove();
+            }
+
+        }
     }
 
-
+    // TODO comment
     private boolean measureDistance(float ax, float bx, float ay, float by){
         float maximalDistance = tranche/2;//minimal distance between 2 circle /2
 
         return Math.sqrt((ax-bx)*(ax-bx)+(ay-by)*(ay-by)) < maximalDistance;
     }
 
+    // TODO comment && see what takes the most time when large blockchain
     private void placement(){
 
         for(int j = 0; j<board.length;j++)
@@ -435,7 +452,8 @@ public class CustomView extends View {
                 if(measureDistance(touchx, board[j][k].getPosX(), touchy, board[j][k].getPosY())
                         && board[j][k].getRadius()==0
                         &&!AmIAnEye(board[j][k])
-                        && !koRule(j, k)){
+                        && !koRule(j, k)
+                        && !suicide(board[j][k])){
 
                     //check regle ko
 
@@ -445,26 +463,29 @@ public class CustomView extends View {
                     //suppression des unités
                     //suppression des groupes
 
+                    invalidate();
                     removeBlockchain(findtoremove(board[j][k]));
-                    //removeBlockchain(board[j][k]);
+                    turn = (turn + 1)%2;
+
+                    UpdateTimer();
+                    setTurn();
+                    UpdateTextView();
+                    invalidate();
                     //mise a jour blockchain
-                    addToBlockCHain(board[j][k]);
                     //sauvegarde de la matrice actuelle dans une list
                     matrix.add(copy_matrix(board));
                     //fin du tour
 
-                    countTerritories();
+                    addToBlockCHain(board[j][k]);
+                    //countTerritories();
 
-                    turn = (turn + 1)%2;
                     //check des yeux
                     eyesUpdate(board[j][k]);
 
-                    UpdateTimer();
-                    setTurn();
                 }
             }
     }
-
+    // TODO comment
     public void setTurn() {
 
 
@@ -493,6 +514,7 @@ public class CustomView extends View {
         }
     }
 
+    // TODO comment
     public void UpdateTimer() {
         if (currentPaint().equals(circleBlack))
         {
@@ -535,6 +557,34 @@ public class CustomView extends View {
 
     }
 
+    // TODO comment
+    private boolean suicide(Circle circle)
+    {
+        for(Circle c : myNeigbhors(circle))
+        {
+            if(c.getRadius() == 0)
+                return false;
+            else if(c.getPaint().equals(currentPaint()))
+            {
+                for(Blockchain b : blockchain) {
+                    if(b.getCircleList().contains(c) && blockchainLiberties(b) > 1)
+                        return false;
+                }
+            }
+            else if (!c.getPaint().equals(currentPaint()))
+            {
+                for(Blockchain b : blockchain) {
+                    if(b.getCircleList().contains(c) && blockchainLiberties(b) == 1)
+                        return false;
+                }
+            }
+        }
+
+
+        return true;
+    }
+
+    // TODO comment && complexity ?
     private boolean koRule(int j, int k) {
 
         board[j][k].setRadius(tranche/2);
@@ -568,42 +618,29 @@ public class CustomView extends View {
         return false;
     }
 
+    // TODO comment && complexity ?
     private void addToBlockCHain(Circle circle) {
 
-        boolean blockCreatedOrAdded = false;
-        Blockchain current_blockchain = new Blockchain(new ArrayList<Circle>());
-        ArrayList<Blockchain> blockchains_to_remove = new ArrayList<>();
+        ArrayList<Circle> newlist = new ArrayList<>();
+        newlist.add(circle);
+        Blockchain current_blockchain = new Blockchain(newlist);
+
         for(Circle c : myNeigbhors(circle))
         {
             if(c.getRadius() != 0 && c.getPaint().equals(circle.getPaint()))
             {
-                for(Blockchain element : blockchain)
+                for(Iterator<Blockchain> itb = blockchain.iterator();itb.hasNext();)
                 {
-                    if(element.contains(c) && !element.contains(circle) && !blockCreatedOrAdded)
-                    {
-                        element.getCircleList().add(circle);
-                        current_blockchain = element;
-                        blockCreatedOrAdded = true;
-                    }
-                    else if(element.contains(c) && !element.contains(circle) && blockCreatedOrAdded)
+                    Blockchain element = itb.next();
+                    if(element.contains(c) && !element.contains(circle))
                     {
                         current_blockchain.getCircleList().addAll(element.getCircleList());
-                        blockchains_to_remove.add(element);
+                        itb.remove();
                     }
                 }
             }
         }
-        if(!blockCreatedOrAdded)
-        {
-            ArrayList<Circle> newlist = new ArrayList<>();
-            newlist.add(circle);
-            blockchain.add(new Blockchain(newlist));
-
-        }
-
-        for(Blockchain to_remove : blockchains_to_remove)
-            blockchain.remove(to_remove);
-
+        blockchain.add(current_blockchain);
     }
 
     private Paint currentPaint(){
@@ -664,14 +701,50 @@ public class CustomView extends View {
         return true;
     }
 
-    public void textview_setter(TextView white_timer, TextView black_timer, TextView tv_turn)
+    private void UpdateTextView()
+    {
+        white_pieces.setText("" + whiteDead);
+        black_pieces.setText("" + blackDead);
+        white_territories.setText("" + numberOfWhiteTerritories);
+        black_territories.setText("" + numberOfBlackTerritories);
+
+        white_score.setText("" + (whiteDead + numberOfWhiteTerritories));
+        black_score.setText("" + (blackDead + numberOfBlackTerritories));
+    }
+
+    public void textview_setter(TextView white_timer,
+                                TextView white_pieces,
+                                TextView white_territories,
+                                TextView white_score,
+                                TextView black_timer,
+                                TextView black_pieces,
+                                TextView black_territories,
+                                TextView black_score,
+                                TextView tv_turn)
     {
         this.white_timer = white_timer;
+        this.white_pieces = white_pieces;
+        this.white_territories = white_territories;
+        this.white_score = white_score;
         this.black_timer = black_timer;
+        this.black_pieces = black_pieces;
+        this.black_territories = black_territories;
+        this.black_score = black_score;
         this.tv_turn = tv_turn;
     }
 
-    private void countTerritories(){
+    // TODO implementation
+    public void reset()
+    {
+        System.out.println("Reset");
+    }
+
+    // TODO implementation
+    public void finish() {
+        System.out.println("Finish");
+    }
+
+/*    private void countTerritories(){
 
         List<Circle> waitingTestedCircle = new ArrayList<Circle>();
         List<Circle> blackTestedCircle = new ArrayList<Circle>();
@@ -829,7 +902,7 @@ public class CustomView extends View {
         System.out.println("number of black terri "+numberOfBlackTerritories);
         System.out.println("number of white terri "+numberOfWhiteTerritories);
     }
-
+*/
 
 }
 
