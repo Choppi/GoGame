@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 //class definition
 public class CustomView extends View {
 
+    private final long timer_init = 900000;
+
     private TextView white_timer;
     private TextView black_timer;
     private Paint black, gray, circleBlack, circleWhite;
@@ -33,8 +35,8 @@ public class CustomView extends View {
     private Circle[][] board;
     private List<Eye> eyes;
 
-    private long remainingTime_white = 900000;
-    private long remainingTime_black = 900000;
+    private long remainingTime_white;
+    private long remainingTime_black;
 
     //private int step;
     private int tranche;
@@ -53,6 +55,7 @@ public class CustomView extends View {
     private int blackDead = 0;
 
     private int turn = 1;
+    private boolean play;
 
     private TextView tv_turn;
     private TextView white_pieces;
@@ -121,9 +124,9 @@ public class CustomView extends View {
         board = new Circle[10][10];
         eyes = new ArrayList<>();
 
-
         gray = new Paint(Paint.ANTI_ALIAS_FLAG);
         gray.setColor(Color.TRANSPARENT);
+        play = true;
 
         for (int i = 0; i < board.length; i++)
             for (int j = 0; j < board[i].length; j++)
@@ -139,6 +142,10 @@ public class CustomView extends View {
         circleBlack.setColor(Color.BLACK);
         circleWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
         circleWhite.setColor(Color.WHITE);
+
+
+        remainingTime_white = timer_init;
+        remainingTime_black = timer_init;
 
         black_countdown_timer = new CountDownTimer(remainingTime_black, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -158,6 +165,22 @@ public class CustomView extends View {
         }.start();
 
 
+        white_countdown_timer = new CountDownTimer(remainingTime_white, 1000) {
+            public void onTick(long millisUntilFinished) {
+                //update total with the remaining time left
+                String hms = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)));
+                remainingTime_white = millisUntilFinished;
+                white_timer.setText(hms);
+
+            }
+
+            public void onFinish() {
+                white_timer.setText("Time is up");
+
+            }
+        };
     }
 
     // TODO comment
@@ -194,15 +217,17 @@ public class CustomView extends View {
     // TODO Comment
     public boolean onTouchEvent(MotionEvent event) {
         // determine what kind of touch event we have
+        if(play)
+        {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
 
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                touchx = event.getX();
+                touchy = event.getY();
 
-            touchx = event.getX();
-            touchy = event.getY();
+                placement();
 
-            placement();
-
-            return true;
+                return true;
+            }
         }
         return super.onTouchEvent(event);
     }
@@ -736,12 +761,89 @@ public class CustomView extends View {
     // TODO implementation
     public void reset()
     {
-        System.out.println("Reset");
+        blockchain.clear();
+        matrix.clear();
+        eyes.clear();
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j].setRadius(0);
+                board[i][j].setColor(gray);
+            }
+        }
+        black_countdown_timer.cancel();
+        white_countdown_timer.cancel();
+
+
+        remainingTime_white = timer_init;
+        remainingTime_black = timer_init;
+        whiteDead = 0;
+        blackDead = 0;
+        numberOfBlackTerritories = 0;
+        numberOfWhiteTerritories = 0;
+
+        black_countdown_timer = new CountDownTimer(remainingTime_black, 1000) {
+            public void onTick(long millisUntilFinished) {
+                //update total with the remaining time left
+                String hms = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)));
+                remainingTime_black = millisUntilFinished;
+                black_timer.setText(hms);
+
+            }
+
+            public void onFinish() {
+                black_timer.setText("Time is up");
+
+            }
+        }.start();
+
+        String hms = String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(remainingTime_white) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(remainingTime_white)),
+                TimeUnit.MILLISECONDS.toSeconds(remainingTime_white) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(remainingTime_white)));
+        white_timer.setText(hms);
+
+        UpdateTextView();
+        setTurn();
+        play = true;
+        invalidate();
     }
 
     // TODO implementation
     public void finish() {
-        System.out.println("Finish");
+        white_countdown_timer.cancel();
+        black_countdown_timer.cancel();
+
+        if(Integer.parseInt(white_score.getText().toString()) > Integer.parseInt(black_score.getText().toString()))
+        {
+            String white_string = getResources().getString(R.string.white);
+
+            SpannableString whiteSpannable = new SpannableString(white_string);
+
+            whiteSpannable.setSpan(new ForegroundColorSpan(Color.WHITE), 0, white_string.length(), 0);
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            builder.append(whiteSpannable);
+            builder.append(getResources().getString(R.string.win));
+            tv_turn.setText(builder, TextView.BufferType.SPANNABLE);
+        }
+        else if(Integer.parseInt(white_score.getText().toString()) < Integer.parseInt(black_score.getText().toString()))
+        {
+            String black_string = getResources().getString(R.string.black);
+
+            SpannableString blackSpannable = new SpannableString(black_string);
+
+            blackSpannable.setSpan(new ForegroundColorSpan(Color.BLACK), 0, black_string.length(), 0);
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            builder.append(blackSpannable);
+            builder.append(getResources().getString(R.string.win));
+            tv_turn.setText(builder, TextView.BufferType.SPANNABLE);
+        }
+        else
+        {
+            tv_turn.setText(getResources().getString(R.string.draw));
+        }
+        play = false;
     }
 
 /*    private void countTerritories(){

@@ -4,9 +4,11 @@
     <string name="black">Black</string>
     <string name="insert"> , insert a stone</string>
     <string name="territories">Territories</string>
-    <string name="pieces">Remaining pieces</string>
+    <string name="pieces">Pieces removed</string>
     <string name="score">Score</string>
     <string name="timer">Timer</string>
-    <string name="reset">Reset the game</string>
-    <string name="finish">Finish the game</string>
+    <string name="reset">Reset</string>
+    <string name="finish">Finish</string>
+    <string name="win">, you win</string>
+    <string name="draw">Draw</string>
 </resources>
