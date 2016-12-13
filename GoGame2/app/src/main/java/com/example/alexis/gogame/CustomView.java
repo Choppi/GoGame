@@ -160,6 +160,7 @@ public class CustomView extends View {
 
             public void onFinish() {
                 black_timer.setText("Time is up");
+                finish();
 
             }
         }.start();
@@ -178,7 +179,7 @@ public class CustomView extends View {
 
             public void onFinish() {
                 white_timer.setText("Time is up");
-
+                finish();
             }
         };
     }
@@ -557,6 +558,7 @@ public class CustomView extends View {
 
             public void onFinish() {
                 black_timer.setText("Time is up");
+                finish();
 
             }
         }.start();
@@ -575,6 +577,7 @@ public class CustomView extends View {
                 }
                 public void onFinish() {
                     white_timer.setText("Time is up");
+                    finish();
 
                 }
             }.start();
@@ -795,6 +798,7 @@ public class CustomView extends View {
 
             public void onFinish() {
                 black_timer.setText("Time is up");
+                finish();
 
             }
         }.start();
