@@ -502,7 +502,7 @@ public class CustomView extends View {
                     //fin du tour
 
                     addToBlockCHain(board[j][k]);
-                    //countTerritories();
+                    countTerritories();
 
                     //check des yeux
                     eyesUpdate(board[j][k]);
@@ -846,166 +846,92 @@ public class CustomView extends View {
         play = false;
     }
 
-/*    private void countTerritories(){
+    private void countTerritories(){
 
-        List<Circle> waitingTestedCircle = new ArrayList<Circle>();
-        List<Circle> blackTestedCircle = new ArrayList<Circle>();
-        List<Circle> whiteTestedCircle = new ArrayList<Circle>();
-        List<Circle> notBelongToTerritoriesCircle = new ArrayList<Circle>();
+        boolean blockCreatedOrAdded = false;
+        Blockchain current_blockchain = new Blockchain(new ArrayList<Circle>());
+        ArrayList<Blockchain> blockchains_to_remove = new ArrayList<>();
+
+        List<Blockchain> territories = new ArrayList<>();
+        List<Blockchain> whiteTerritories = new ArrayList<>();
+        List<Blockchain> blackTerritories = new ArrayList<>();
+
 
         for(int j = 0; j<board.length;j++)
             for(int k = 0; k<board[j].length;k++) {
 
-                if(board[j][k].getPaint()==gray){
-                    int numberOfWhiteNeighbors = 0;
-                    int numberOfBlackNeighbors = 0;
+                if (board[j][k].getPaint() == gray)
+                {
+                    for (Circle c : myNeigbhors(board[k][j]))
+                    {
+                        if (c.getPaint() == gray)
+                        {
+                            for (Blockchain element : territories)
+                            {
+                                if (element.contains(c)
+                                        && !element.contains(board[k][j])
+                                        && !blockCreatedOrAdded)
+                                {
+                                    element.getCircleList().add(board[k][j]);
+                                    current_blockchain = element;
+                                    blockCreatedOrAdded = true;
+                                }
 
-                    for(Circle c : myNeigbhors(board[j][k])){
-                        if(c.getPaint()==circleWhite)
-                            numberOfWhiteNeighbors++;
-                        else if(c.getPaint()==circleBlack)
-                            numberOfBlackNeighbors++;
+                                else if (element.contains(c)
+                                        && !element.contains(board[k][j])
+                                        && blockCreatedOrAdded)
+                                {
+                                    current_blockchain.getCircleList().addAll(element.getCircleList());
+                                    blockchains_to_remove.add(element);
+                                }
+                            }
+                        }
                     }
-                    if (numberOfBlackNeighbors > 0 && numberOfWhiteNeighbors > 0)
-                        notBelongToTerritoriesCircle.add(board[j][k]);
-                    else if (numberOfBlackNeighbors > 0 && numberOfWhiteNeighbors == 0)
-                        blackTestedCircle.add(board[j][k]);
-                    else if (numberOfBlackNeighbors == 0 && numberOfWhiteNeighbors > 0)
-                        whiteTestedCircle.add(board[j][k]);
-                    else
-                        waitingTestedCircle.add(board[j][k]);
-                }
-            }
-        boolean notChangmentOccured = false;
-        List<Circle> addToNotBelongToTerritoriesCircle = new ArrayList<Circle>();
-        List<Circle> addToWhiteTestedCircle = new ArrayList<Circle>();
-        List<Circle> addToBlackTestedCircle = new ArrayList<Circle>();
-        List<Circle> removeToBlackTestedCircle = new ArrayList<Circle>();
-        List<Circle> removeToWhiteTestedCircle = new ArrayList<Circle>();
-        List<Circle> removeTowaitingTestedCircle = new ArrayList<Circle>();
+                    if (!blockCreatedOrAdded) {
+                        ArrayList<Circle> newlist = new ArrayList<>();
+                        newlist.add(board[j][k]);
+                        territories.add(new Blockchain(newlist));
 
-        while(!notChangmentOccured){
-            notChangmentOccured = true;
+                    }
 
-            for(Circle c : notBelongToTerritoriesCircle){
-                for(Circle n : myNeigbhors(c)){
-                    for (Circle b : whiteTestedCircle){
-                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
-                            addToNotBelongToTerritoriesCircle.add(b);
-                            removeToWhiteTestedCircle.add(b);
-                            notChangmentOccured = false;
-                        }
-                    }
-                    for (Circle b : blackTestedCircle){
-                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
-                            addToNotBelongToTerritoriesCircle.add(b);
-                            //blackTestedCircle.remove(b);
-                            removeToBlackTestedCircle.add(b);
-                            notChangmentOccured = false;
-                        }
-                    }
-                    for (Circle b : waitingTestedCircle){
-                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
-                            addToNotBelongToTerritoriesCircle.add(b);
-                            //waitingTestedCircle.remove(b);
-                            removeTowaitingTestedCircle.add(b);
-                            notChangmentOccured = false;
-                        }
-                    }
-                }
-            }
-            blackTestedCircle.removeAll(removeToBlackTestedCircle);
-            removeToBlackTestedCircle.clear();
-            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
-            removeToWhiteTestedCircle.clear();
-            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
-            removeTowaitingTestedCircle.clear();
-
-            for ( Circle c : whiteTestedCircle){
-                for(Circle n : myNeigbhors(c)){
-                    for(Circle b : waitingTestedCircle){
-                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
-                            addToWhiteTestedCircle.add(b);
-                            //waitingTestedCircle.remove(b);
-                            removeTowaitingTestedCircle.add(b);
-                            notChangmentOccured = false;
-                        }
-                    }
-                    for(Circle b : blackTestedCircle){
-                        if(this.getCoordMatrix(n).equals(this.getCoordMatrix(b))){
-                            addToNotBelongToTerritoriesCircle.add(b);
-                            addToNotBelongToTerritoriesCircle.add(c);
-                            //whiteTestedCircle.remove(c);
-                            //blackTestedCircle.remove(b);
-                            removeToBlackTestedCircle.add(b);
-                            removeToWhiteTestedCircle.add(c);
-                            notChangmentOccured = false;
-                        }
-                    }
+                    for (Blockchain to_remove : blockchains_to_remove)
+                        territories.remove(to_remove);
                 }
             }
 
-            blackTestedCircle.removeAll(removeToBlackTestedCircle);
-            removeToBlackTestedCircle.clear();
-            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
-            removeToWhiteTestedCircle.clear();
-            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
-            removeTowaitingTestedCircle.clear();
-
-            for ( Circle c : blackTestedCircle) {
-                for (Circle n : myNeigbhors(c)) {
-                    for (Circle b : waitingTestedCircle) {
-                        if (this.getCoordMatrix(n).equals(this.getCoordMatrix(b))) {
-                            addToBlackTestedCircle.add(b);
-                            //waitingTestedCircle.remove(b);
-                            removeTowaitingTestedCircle.add(b);
-                            notChangmentOccured = false;
-                        }
-                    }
-                    for (Circle b : whiteTestedCircle) {
-                        if (this.getCoordMatrix(n).equals(this.getCoordMatrix(b))) {
-                            addToNotBelongToTerritoriesCircle.add(b);
-                            addToNotBelongToTerritoriesCircle.add(c);
-                            //whiteTestedCircle.remove(b);
-                            //blackTestedCircle.remove(c);
-                            removeToBlackTestedCircle.add(c);
-                            removeToWhiteTestedCircle.add(b);
-                            notChangmentOccured = false;
-                        }
-                    }
+        for(Blockchain b : territories)
+        {
+            int whiteNeighbors = 0;
+            int blackNeighbors = 0;
+            for (Circle c : b.getCircleList())
+            {
+                for( Circle n : myNeigbhors(c))
+                {
+                    if(n.getPaint()==circleWhite)
+                        whiteNeighbors+=1;
+                    else if(n.getPaint()==circleBlack)
+                        blackNeighbors += 1;
                 }
             }
 
-            blackTestedCircle.removeAll(removeToBlackTestedCircle);
-            removeToBlackTestedCircle.clear();
-            whiteTestedCircle.removeAll(removeToWhiteTestedCircle);
-            removeToWhiteTestedCircle.clear();
-            waitingTestedCircle.removeAll(removeTowaitingTestedCircle);
-            removeTowaitingTestedCircle.clear();
+            if(whiteNeighbors > 0 && blackNeighbors == 0)
+                whiteTerritories.add(b);
 
-            for(Circle element : addToNotBelongToTerritoriesCircle){
-                notBelongToTerritoriesCircle.add(element);
-            }
-            addToNotBelongToTerritoriesCircle.clear();
-
-            for(Circle element : addToBlackTestedCircle){
-                blackTestedCircle.add(element);
-            }
-            addToBlackTestedCircle.clear();
-
-            for(Circle element : addToWhiteTestedCircle){
-                whiteTestedCircle.add(element);
-            }
-            addToWhiteTestedCircle.clear();
+            else if (blackNeighbors > 0 && whiteNeighbors == 0)
+                blackTerritories.add(b);
         }
 
-        numberOfWhiteTerritories=whiteTestedCircle.size();
-        numberOfBlackTerritories=blackTestedCircle.size();
-        System.out.println("number of black terri "+numberOfBlackTerritories);
-        System.out.println("number of white terri "+numberOfWhiteTerritories);
-    }
-*/
+        for (Blockchain white : whiteTerritories)
+            numberOfWhiteTerritories += white.sizeCircleList();
+        for (Blockchain black : blackTerritories)
+            numberOfBlackTerritories += black.sizeCircleList();
 
+        System.out.println(" territoires  : "+ territories.size());
+
+        System.out.println(" territoires blancs : "+numberOfWhiteTerritories);
+        System.out.println(" territoires noirs : "+numberOfBlackTerritories);
+
+    }
 }
 
 
