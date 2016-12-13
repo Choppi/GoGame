@@ -848,54 +848,34 @@ public class CustomView extends View {
 
     private void countTerritories(){
 
-        boolean blockCreatedOrAdded = false;
-        Blockchain current_blockchain = new Blockchain(new ArrayList<Circle>());
-        ArrayList<Blockchain> blockchains_to_remove = new ArrayList<>();
 
         List<Blockchain> territories = new ArrayList<>();
         List<Blockchain> whiteTerritories = new ArrayList<>();
         List<Blockchain> blackTerritories = new ArrayList<>();
 
+        numberOfBlackTerritories = 0;
+        numberOfWhiteTerritories = 0;
+
 
         for(int j = 0; j<board.length;j++)
             for(int k = 0; k<board[j].length;k++) {
 
-                if (board[j][k].getPaint() == gray)
-                {
-                    for (Circle c : myNeigbhors(board[k][j]))
-                    {
-                        if (c.getPaint() == gray)
-                        {
-                            for (Blockchain element : territories)
-                            {
-                                if (element.contains(c)
-                                        && !element.contains(board[k][j])
-                                        && !blockCreatedOrAdded)
-                                {
-                                    element.getCircleList().add(board[k][j]);
-                                    current_blockchain = element;
-                                    blockCreatedOrAdded = true;
-                                }
+                ArrayList<Circle> newlist = new ArrayList<>();
+                newlist.add(board[j][k]);
+                Blockchain current_blockchain = new Blockchain(newlist);
 
-                                else if (element.contains(c)
-                                        && !element.contains(board[k][j])
-                                        && blockCreatedOrAdded)
-                                {
-                                    current_blockchain.getCircleList().addAll(element.getCircleList());
-                                    blockchains_to_remove.add(element);
-                                }
+                if (board[j][k].getRadius()==0){
+                    for(Circle v : myNeigbhors(board[j][k])){
+                        for (Iterator<Blockchain> it = territories.iterator();it.hasNext();){
+                            Blockchain b = it.next();
+                            if (b.contains(v)){
+                                current_blockchain.getCircleList().addAll(b.getCircleList());
+                                it.remove();
                             }
                         }
                     }
-                    if (!blockCreatedOrAdded) {
-                        ArrayList<Circle> newlist = new ArrayList<>();
-                        newlist.add(board[j][k]);
-                        territories.add(new Blockchain(newlist));
 
-                    }
-
-                    for (Blockchain to_remove : blockchains_to_remove)
-                        territories.remove(to_remove);
+                    territories.add(current_blockchain);
                 }
             }
 
@@ -909,6 +889,7 @@ public class CustomView extends View {
                 {
                     if(n.getPaint()==circleWhite)
                         whiteNeighbors+=1;
+
                     else if(n.getPaint()==circleBlack)
                         blackNeighbors += 1;
                 }
@@ -931,6 +912,7 @@ public class CustomView extends View {
         System.out.println(" territoires blancs : "+numberOfWhiteTerritories);
         System.out.println(" territoires noirs : "+numberOfBlackTerritories);
 
+        UpdateTextView();
     }
 }
 
