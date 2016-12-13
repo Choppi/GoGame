@@ -51,8 +51,8 @@ public class CustomView extends View {
 
     private int numberOfBlackTerritories = 0;
     private int numberOfWhiteTerritories = 0;
-    private int whiteDead = 0;
-    private int blackDead = 0;
+    private int whitePieces = 0;
+    private int blackPieces = 0;
 
     private int turn = 1;
     private boolean play;
@@ -336,37 +336,13 @@ public class CustomView extends View {
                 m.setRadius(0);
                 m.setColor(gray);
                 if (currentPaint().equals(circleBlack))
-                    blackDead++;
+                    whitePieces--;
                 else
-                    whiteDead++;
+                    blackPieces--;
             }
         }
 
         blockchain.removeAll(b);
-
-        /*
-        for (Iterator<Blockchain> itb = blockchain.iterator();itb.hasNext();) {
-            Blockchain element = itb.next();
-            if (b.contains(element)) {
-                for(Iterator<Eye> ite = eyes.iterator();ite.hasNext();)
-                {
-                    Eye eye = ite.next();
-                    if(eye.getSurrounders().equals(element))
-                    {
-                        ite.remove();
-                    }
-                }
-                for (Circle m : element.getCircleList()) {
-                    m.setRadius(0);
-                    m.setColor(gray);
-                    if (currentPaint().equals(circleBlack))
-                        blackDead++;
-                    else
-                        whiteDead++;
-                }
-                itb.remove();
-            }
-        }*/
     }
 
     // TODO comment && less complexity
@@ -488,11 +464,13 @@ public class CustomView extends View {
                     board[j][k].setColor(currentPaint());
                     //suppression des unités
                     //suppression des groupes
-
+                    if(currentPaint()==circleWhite)
+                        whitePieces++;
+                    else
+                        blackPieces++;
                     invalidate();
                     removeBlockchain(findtoremove(board[j][k]));
                     turn = (turn + 1)%2;
-
                     UpdateTimer();
                     setTurn();
                     UpdateTextView();
@@ -501,12 +479,12 @@ public class CustomView extends View {
                     //sauvegarde de la matrice actuelle dans une list
                     matrix.add(copy_matrix(board));
                     //fin du tour
-
-                    addToBlockCHain(board[j][k]);
                     countTerritories();
+                    addToBlockCHain(board[j][k]);
 
                     //check des yeux
                     eyesUpdate(board[j][k]);
+
 
                 }
             }
@@ -731,13 +709,16 @@ public class CustomView extends View {
 
     private void UpdateTextView()
     {
-        white_pieces.setText("" + whiteDead);
-        black_pieces.setText("" + blackDead);
+        white_pieces.setText("" + whitePieces);
+        black_pieces.setText("" + blackPieces);
         white_territories.setText("" + numberOfWhiteTerritories);
         black_territories.setText("" + numberOfBlackTerritories);
 
-        white_score.setText("" + (whiteDead + numberOfWhiteTerritories));
-        black_score.setText("" + (blackDead + numberOfBlackTerritories));
+        white_score.setText("" + (whitePieces + numberOfWhiteTerritories));
+        black_score.setText("" + (blackPieces + numberOfBlackTerritories));
+
+
+        invalidate();
     }
 
     public void textview_setter(TextView white_timer,
@@ -780,8 +761,8 @@ public class CustomView extends View {
 
         remainingTime_white = timer_init;
         remainingTime_black = timer_init;
-        whiteDead = 0;
-        blackDead = 0;
+        whitePieces = 0;
+        blackPieces = 0;
         numberOfBlackTerritories = 0;
         numberOfWhiteTerritories = 0;
 
@@ -854,8 +835,6 @@ public class CustomView extends View {
 
 
         List<Blockchain> territories = new ArrayList<>();
-        List<Blockchain> whiteTerritories = new ArrayList<>();
-        List<Blockchain> blackTerritories = new ArrayList<>();
 
         numberOfBlackTerritories = 0;
         numberOfWhiteTerritories = 0;
@@ -900,22 +879,11 @@ public class CustomView extends View {
             }
 
             if(whiteNeighbors > 0 && blackNeighbors == 0)
-                whiteTerritories.add(b);
+                numberOfWhiteTerritories+=b.sizeCircleList();
 
             else if (blackNeighbors > 0 && whiteNeighbors == 0)
-                blackTerritories.add(b);
+                numberOfBlackTerritories+=b.sizeCircleList();
         }
-
-        for (Blockchain white : whiteTerritories)
-            numberOfWhiteTerritories += white.sizeCircleList();
-        for (Blockchain black : blackTerritories)
-            numberOfBlackTerritories += black.sizeCircleList();
-
-        System.out.println(" territoires  : "+ territories.size());
-
-        System.out.println(" territoires blancs : "+numberOfWhiteTerritories);
-        System.out.println(" territoires noirs : "+numberOfBlackTerritories);
-
         UpdateTextView();
     }
 }
