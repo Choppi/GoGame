@@ -321,7 +321,6 @@ public class CustomView extends View {
     // TODO less complexity
     public void removeBlockchain(List<Blockchain> b) {
 
-
         for(Blockchain element : b)
         {
             for(Iterator<Eye> ite = eyes.iterator();ite.hasNext();)
@@ -333,6 +332,7 @@ public class CustomView extends View {
                 }
             }
             for (Circle m : element.getCircleList()) {
+
                 m.setRadius(0);
                 m.setColor(gray);
                 if (currentPaint().equals(circleBlack))
@@ -488,6 +488,7 @@ public class CustomView extends View {
 
                 }
             }
+        System.out.println("Size : "+blockchain.size());
     }
     // TODO comment
     public void setTurn() {
@@ -758,7 +759,7 @@ public class CustomView extends View {
         black_countdown_timer.cancel();
         white_countdown_timer.cancel();
 
-
+        turn = 1;
         remainingTime_white = timer_init;
         remainingTime_black = timer_init;
         whitePieces = 0;
@@ -766,33 +767,15 @@ public class CustomView extends View {
         numberOfBlackTerritories = 0;
         numberOfWhiteTerritories = 0;
 
-        black_countdown_timer = new CountDownTimer(remainingTime_black, 1000) {
-            public void onTick(long millisUntilFinished) {
-                //update total with the remaining time left
-                String hms = String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
-                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)));
-                remainingTime_black = millisUntilFinished;
-                black_timer.setText(hms);
-
-            }
-
-            public void onFinish() {
-                black_timer.setText("Time is up");
-                finish();
-
-            }
-        }.start();
-
         String hms = String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(remainingTime_white) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(remainingTime_white)),
                 TimeUnit.MILLISECONDS.toSeconds(remainingTime_white) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(remainingTime_white)));
         white_timer.setText(hms);
 
-        UpdateTextView();
         setTurn();
         play = true;
-        invalidate();
+        UpdateTimer();
+        UpdateTextView();
     }
 
     // TODO implementation
