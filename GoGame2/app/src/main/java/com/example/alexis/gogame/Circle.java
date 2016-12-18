@@ -8,24 +8,20 @@ public class Circle {
     private int posX;
     private int posY;
     private int radius;
-    private int liberties;
     private Paint paint;
 
     public Circle(int posX, int posY,Paint paint) {
         this.posX = posX;
         this.posY = posY;
         this.radius = 0;
-        this.liberties = 0;
         this.paint = paint;
-
-
     }
+
     public Circle(Circle c)
     {
         this.posX = c.getPosX();
         this.posY = c.getPosY();
         this.radius = c.getRadius();
-        this.liberties = c.getLiberties();
         this.paint = c.getPaint();
     }
 
@@ -51,10 +47,6 @@ public class Circle {
 
     public void setRadius(int radius) {
         this.radius = radius;
-    }
-
-    public int getLiberties() {
-        return liberties;
     }
 
     public Paint getPaint() {

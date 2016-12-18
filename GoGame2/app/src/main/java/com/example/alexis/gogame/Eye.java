@@ -26,10 +26,6 @@ public class Eye {
         return eye;
     }
 
-    public void setEye(Circle eye) {
-        this.eye = eye;
-    }
-
     public Blockchain getSurrounders() {
         return surrounders;
     }

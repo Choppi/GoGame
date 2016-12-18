@@ -65,6 +65,8 @@ public class CustomView extends View {
     private TextView black_score;
     private TextView white_score;
 
+    // Alex - les champs
+
     //default constructor
     public CustomView(Context c) {
         super(c);
