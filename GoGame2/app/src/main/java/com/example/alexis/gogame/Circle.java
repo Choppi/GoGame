@@ -10,7 +10,6 @@ public class Circle {
     private int radius;
     private int liberties;
     private Paint paint;
-    private int territoriesIndex;
 
     public Circle(int posX, int posY,Paint paint) {
         this.posX = posX;
@@ -58,10 +57,6 @@ public class Circle {
         return liberties;
     }
 
-    public void setLiberties(int liberties) {
-        this.liberties = liberties;
-    }
-
     public Paint getPaint() {
         return paint;
     }
@@ -82,17 +77,5 @@ public class Circle {
         if (getRadius() != circle.getRadius()) return false;
         return getPaint().equals(circle.getPaint());
 
-    }
-
-    public int getTerritoriesIndex() {
-        return territoriesIndex;
-    }
-
-    public void setTerritoriesIndex(int territoriesIndex) {
-        //0 is null
-        //1 is black
-        //2 is white
-        //3 is shared
-        this.territoriesIndex = territoriesIndex;
     }
 }

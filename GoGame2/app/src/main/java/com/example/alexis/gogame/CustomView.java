@@ -84,7 +84,7 @@ public class CustomView extends View {
         super(c, as, default_style);
         init();
     }
-
+    // Max
     private int singleMeasure(int spec, int screenDim) {
         /*
           Mesure sur un axe
@@ -102,7 +102,7 @@ public class CustomView extends View {
 
     @Override
 
-    // TODO maxime comments
+    // Max
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // On récupère les dimensions de l'écran
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
@@ -117,7 +117,7 @@ public class CustomView extends View {
         setMeasuredDimension(retour, retour);
     }
 
-    // TODO comment
+    // Max
     public void init() {
         blockchain = new ArrayList<>();
         matrix = new ArrayList<>();
@@ -184,7 +184,7 @@ public class CustomView extends View {
         };
     }
 
-    // TODO comment
+    // Alex
     public void onDraw(final Canvas canvas) {
         //call the superclass method
         super.onDraw(canvas);
@@ -215,7 +215,7 @@ public class CustomView extends View {
 
     }
 
-    // TODO Comment
+    // Max
     public boolean onTouchEvent(MotionEvent event) {
         // determine what kind of touch event we have
         if(play)
@@ -233,7 +233,7 @@ public class CustomView extends View {
         return super.onTouchEvent(event);
     }
 
-    // TODO commment
+    // Max
     public ArrayList<Circle> myNeigbhors(Circle c) {
         ArrayList<Circle> result = new ArrayList<>();
 
@@ -294,7 +294,7 @@ public class CustomView extends View {
         return result;
     }
 
-    // TODO comment && resolve null
+    // Max
     public Pair<Integer, Integer> getCoordMatrix(Circle circle) {
 
         for (int i = 0; i < board.length; i++) {
@@ -306,6 +306,7 @@ public class CustomView extends View {
         return null;
     }
 
+    // Max
     public boolean searchFreeNeighbors(ArrayList<Circle> circleList) {
         //return true if the chain has at least one free neighbors
         for (Circle c : circleList) {
@@ -318,7 +319,7 @@ public class CustomView extends View {
         return false;
     }
 
-    // TODO less complexity
+    // Max
     public void removeBlockchain(List<Blockchain> b) {
 
         for(Blockchain element : b)
@@ -345,7 +346,7 @@ public class CustomView extends View {
         blockchain.removeAll(b);
     }
 
-    // TODO comment && less complexity
+    // Max
     public List<Blockchain> findtoremove(Circle c) {
         //on va chercher tous les voisins du jetons. Pour chaque voisins ennemis, on va vérifier si
         //il appartient à une blockchain
@@ -365,7 +366,7 @@ public class CustomView extends View {
         return to_remove;
     }
 
-    // TODO comment
+    // Alex
     public boolean AmIAnEye(Circle c) {
 
         boolean eyefound = false;
@@ -397,7 +398,7 @@ public class CustomView extends View {
         return false;
         }
 
-    // TODO comment
+    // Alex
     private void eyesUpdate(Circle c) {
 
         List<Circle> test = new ArrayList<>();
@@ -439,14 +440,14 @@ public class CustomView extends View {
         }
     }
 
-    // TODO comment
+    // Max
     private boolean measureDistance(float ax, float bx, float ay, float by){
         float maximalDistance = tranche/2;//minimal distance between 2 circle /2
 
         return Math.sqrt((ax-bx)*(ax-bx)+(ay-by)*(ay-by)) < maximalDistance;
     }
 
-    // TODO comment && see what takes the most time when large blockchain
+    // Alex
     private void placement(){
 
         for(int j = 0; j<board.length;j++)
@@ -490,7 +491,7 @@ public class CustomView extends View {
             }
         System.out.println("Size : "+blockchain.size());
     }
-    // TODO comment
+    // Alex
     public void setTurn() {
 
 
@@ -519,7 +520,7 @@ public class CustomView extends View {
         }
     }
 
-    // TODO comment
+    // Alex
     public void UpdateTimer() {
         if (currentPaint().equals(circleBlack))
         {
@@ -564,7 +565,7 @@ public class CustomView extends View {
 
     }
 
-    // TODO comment
+    // Alex
     private boolean suicide(Circle circle)
     {
         for(Circle c : myNeigbhors(circle))
@@ -591,7 +592,7 @@ public class CustomView extends View {
         return true;
     }
 
-    // TODO comment && complexity ?
+    // ALex
     private boolean koRule(int j, int k) {
 
         board[j][k].setRadius(tranche/2);
@@ -625,7 +626,7 @@ public class CustomView extends View {
         return false;
     }
 
-    // TODO comment && complexity ?
+    // Alex
     private void addToBlockCHain(Circle circle) {
 
         ArrayList<Circle> newlist = new ArrayList<>();
@@ -650,6 +651,7 @@ public class CustomView extends View {
         blockchain.add(current_blockchain);
     }
 
+    // Max
     private Paint currentPaint(){
         //return paint of the current player
         if(turn%2==0){
@@ -658,6 +660,7 @@ public class CustomView extends View {
         return circleBlack;
     }
 
+    // Alex
     public int blockchainLiberties(Blockchain to_test) {
         List<Circle> all_liberties = new ArrayList<>();
         for(Circle circle : to_test.getCircleList())
@@ -672,6 +675,7 @@ public class CustomView extends View {
         return all_liberties.size();
     }
 
+    // ALex
     public Circle[][] copy_matrix(Circle[][] matrix)
     {
         Circle[][] new_matrix = new Circle[matrix.length][matrix.length];
@@ -687,6 +691,7 @@ public class CustomView extends View {
         return new_matrix;
     }
 
+    // Alex
     public boolean matrix_equals(Circle[][] a, Circle[][] b)
     {
         //test matrix
@@ -707,7 +712,7 @@ public class CustomView extends View {
         }
         return true;
     }
-
+    // Alex
     private void UpdateTextView()
     {
         white_pieces.setText("" + whitePieces);
@@ -722,6 +727,7 @@ public class CustomView extends View {
         invalidate();
     }
 
+    // Max
     public void textview_setter(TextView white_timer,
                                 TextView white_pieces,
                                 TextView white_territories,
@@ -743,7 +749,7 @@ public class CustomView extends View {
         this.tv_turn = tv_turn;
     }
 
-    // TODO implementation
+    // Alex
     public void reset()
     {
         blockchain.clear();
@@ -778,7 +784,7 @@ public class CustomView extends View {
         UpdateTextView();
     }
 
-    // TODO implementation
+    // Max
     public void finish() {
         white_countdown_timer.cancel();
         black_countdown_timer.cancel();
@@ -814,6 +820,7 @@ public class CustomView extends View {
         play = false;
     }
 
+    // Max
     private void countTerritories(){
 
 
