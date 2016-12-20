@@ -104,7 +104,7 @@ public class CustomView extends View {
 
     @Override
 
-    // Max
+    // Max test
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // On récupère les dimensions de l'écran
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
